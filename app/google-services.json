@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1075542922278",
+    "firebase_url": "https://pokemontinder-4f85e.firebaseio.com",
+    "project_id": "pokemontinder-4f85e",
+    "storage_bucket": "pokemontinder-4f85e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075542922278:android:f3b7b36ae71ab339",
+        "android_client_info": {
+          "package_name": "com.carpenter.dean.pokemontinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075542922278-urrd4o2cd50b1rfua3jo542ivhotrk9i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzkaw6v44Fx-n5-rIm-2XWC6ajcl883xY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
