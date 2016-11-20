@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1075542922278-39mej6jkhg713fjmjb61ostt02uct03o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carpenter.dean.pokemontinder",
+            "certificate_hash": "95857DAC75CAC55CC9D6ED0C80258F7DC91C8052"
+          }
+        },
+        {
           "client_id": "1075542922278-urrd4o2cd50b1rfua3jo542ivhotrk9i.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075542922278-urrd4o2cd50b1rfua3jo542ivhotrk9i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
