@@ -19,13 +19,20 @@
 
         />
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/title_text_view"/>
+
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/title_text_view"
-        android:text="Login"
+        android:layout_below="@id/google_sign_in_button"
+        android:text="Find matches"
         android:visibility="invisible"
         android:layout_centerInParent="true"
         />
