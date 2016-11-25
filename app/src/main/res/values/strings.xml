@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">PokemonTinder</string>
+    <string name="web_client_id">553429131105-el68jsvtfi6cj3obghflv7r5bd8p7be7.apps.googleusercontent.com</string>
+    <string name="dialog_create_account_positive_button">ok</string>
+    <string name="dialog_cancel_account_creation">cancel</string>
+    <string name="google_sign_in_required">Google Sign in required</string>
+    <string name="choose_your_pokemon">Choose your Pokemon</string>
+    <string name="pokemon_choice_hint">Name or ID:</string>
+    <string name="find_pokemon">Search</string>
+    <string name="create_account_title_text_view">Create Account</string>
+    <string name="search">Search</string>
+    <string name="create_account">Create Account</string>
+    <string name="find_matches">Find matches</string>
+    <string name="sign_out">Sign out</string>
 </resources>
