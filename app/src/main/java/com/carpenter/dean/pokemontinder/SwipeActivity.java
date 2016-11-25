@@ -1,5 +1,6 @@
 package com.carpenter.dean.pokemontinder;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,31 +14,39 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.carpenter.dean.pokemontinder.pokemon.Pokemon;
-import com.google.gson.Gson;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import okhttp3.Call;
-import okhttp3.Callback;
+import java.util.Set;
 
 public class SwipeActivity extends AppCompatActivity {
 
-    private static final String POKEMONLIST = "pokemonlist";
+    private static final String USER = "user";
+    private static final String USERS = "users";
+    private static final String TAG = "SwipeActivity";
 
-    private ArrayList<Pokemon> mPokemon;
-    private PokemonAdapter mPokemonAdapter;
+    private UserAdapter mUserAdapter;
+    private User mUser;
+    private ArrayList<User> mUsers;
+
+    DatabaseReference dbRef;
+    DatabaseReference usersRef;
 
     private FloatingActionButton heartButton;
     private FloatingActionButton xButton;
     private SwipeFlingAdapterView flingContainer;
+    ProgressDialog dialog;
 
-    public static Intent newIntent(Context context, ArrayList<Pokemon> pokemon) {
+    public static Intent newIntent(Context context, User currentUser, ArrayList<User> users) {
         Intent intent = new Intent(context, SwipeActivity.class);
-        intent.putParcelableArrayListExtra(POKEMONLIST, pokemon);
+        intent.putExtra(USER, currentUser);
+        intent.putParcelableArrayListExtra(USERS, users);
         return intent;
     }
 
@@ -47,8 +56,14 @@ public class SwipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
 
+        dbRef = FirebaseDatabase.getInstance().getReference();
+        usersRef = dbRef.child("users");
+
+        mUser = getIntent().getParcelableExtra(USER);
+        Log.d(TAG, "USER: "+mUser.getName());
+        mUsers = getIntent().getParcelableArrayListExtra(USERS);
+
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.SwipeFlingContainer);
-        mPokemon = getIntent().getParcelableArrayListExtra(POKEMONLIST);
 
         xButton = (FloatingActionButton) findViewById(R.id.x_button);
         xButton.setOnClickListener(new View.OnClickListener() {
@@ -66,8 +81,8 @@ public class SwipeActivity extends AppCompatActivity {
             }
         });
 
-        mPokemonAdapter = new PokemonAdapter(getApplicationContext(), mPokemon);
-        flingContainer.setAdapter(mPokemonAdapter);
+        mUserAdapter = new UserAdapter(getApplicationContext(), mUsers);
+        flingContainer.setAdapter(mUserAdapter);
 
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
 
@@ -75,8 +90,8 @@ public class SwipeActivity extends AppCompatActivity {
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                mPokemon.remove(0);
-                mPokemonAdapter.notifyDataSetChanged();
+                mUsers.remove(0);
+                mUserAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -99,8 +114,8 @@ public class SwipeActivity extends AppCompatActivity {
                 Log.d("LIST", "notified");
                 i++;
                 */
-                addPokemon();
-                mPokemonAdapter.notifyDataSetChanged();
+                addUsers(4);
+                mUserAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -118,8 +133,8 @@ public class SwipeActivity extends AppCompatActivity {
         });
     }
 
-    private class PokemonAdapter extends ArrayAdapter<Pokemon> {
-        public PokemonAdapter(Context context, ArrayList<Pokemon> users) {
+    private class UserAdapter extends ArrayAdapter<User> {
+        public UserAdapter(Context context, ArrayList<User> users) {
             super(context, 0, users);
         }
 
@@ -132,17 +147,17 @@ public class SwipeActivity extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_pokemon_view, parent, false);
             }
             TextView pokemonName = (TextView) convertView.findViewById(R.id.pokemon_name);
-            pokemonName.setText(mPokemon.get(position).getName());
+            pokemonName.setText(mUsers.get(position).getPokemon().getName());
             ImageView pokemonPicture = (ImageView) convertView.findViewById(R.id.pokemon_picture);
-            Picasso.with(getContext()).load(mPokemon.get(position).getSprites().getFrontDefault()).into(pokemonPicture);
+            Picasso.with(getContext()).load(mUsers.get(position).getPokemon().getSprites().getFrontDefault()).into(pokemonPicture);
 
 
             return convertView;
         }
     }
-
-    public void addPokemon() {
-        new PokemonDownloader().getPokemon(3, new Callback() {
+/*
+    public void addPokemon(int numOfPokemon) {
+        new PokemonDownloader().getPokemon(numOfPokemon, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -154,7 +169,7 @@ public class SwipeActivity extends AppCompatActivity {
 
                 try {
                     Pokemon pokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
-                    mPokemon.add(pokemon);
+                    mPokemonArrayList.add(pokemon);
                     Log.d("POKEMON CREATED: ", pokemon.getName() + ", URL: " + pokemon.getPokemonUrl().getUrl() +
                             ", Pic URL: " + pokemon.getSprites().getFrontDefault());
                 } catch (Exception errSwipe) {
@@ -162,5 +177,24 @@ public class SwipeActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    */
+
+    public void addUsers(int numOfUsers) {
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // need to remove likes & matches when adding new users
+                for(DataSnapshot child : dataSnapshot.getChildren()) {
+                    mUsers.add(child.getValue(User.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }
