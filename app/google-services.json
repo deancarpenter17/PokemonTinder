@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "1075542922278",
-    "firebase_url": "https://pokemontinder-4f85e.firebaseio.com",
-    "project_id": "pokemontinder-4f85e",
-    "storage_bucket": "pokemontinder-4f85e.appspot.com"
+    "project_number": "553429131105",
+    "firebase_url": "https://pokemontinder-e3f94.firebaseio.com",
+    "project_id": "pokemontinder-e3f94",
+    "storage_bucket": "pokemontinder-e3f94.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1075542922278:android:f3b7b36ae71ab339",
+        "mobilesdk_app_id": "1:553429131105:android:f3b7b36ae71ab339",
         "android_client_info": {
           "package_name": "com.carpenter.dean.pokemontinder"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1075542922278-39mej6jkhg713fjmjb61ostt02uct03o.apps.googleusercontent.com",
+          "client_id": "553429131105-j2f4308dn55vbj6hb4fp07u6hjs623io.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.carpenter.dean.pokemontinder",
-            "certificate_hash": "95857DAC75CAC55CC9D6ED0C80258F7DC91C8052"
+            "certificate_hash": "2B7385DD59DE2077F57D4796D145F8C5D393A44E"
           }
         },
         {
-          "client_id": "1075542922278-urrd4o2cd50b1rfua3jo542ivhotrk9i.apps.googleusercontent.com",
+          "client_id": "553429131105-el68jsvtfi6cj3obghflv7r5bd8p7be7.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDzkaw6v44Fx-n5-rIm-2XWC6ajcl883xY"
+          "current_key": "AIzaSyAXxI7C_BwzCCjZOic4VAQrVktnNT3Jqis"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "1075542922278-urrd4o2cd50b1rfua3jo542ivhotrk9i.apps.googleusercontent.com",
+              "client_id": "553429131105-el68jsvtfi6cj3obghflv7r5bd8p7be7.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
