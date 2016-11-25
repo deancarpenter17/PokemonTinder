@@ -20,7 +20,6 @@ public class Pokemon implements Parcelable {
 
     public Pokemon() {}
 
-
     public int getId() {
         return id;
     }
