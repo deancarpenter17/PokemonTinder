@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.carpenter.dean.pokemontinder"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.carpenter.dean.pokemontinder">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,16 +10,16 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SwipeActivity">
-        </activity>
+        <activity android:name=".SwipeActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".CreateAccountActivity" />
     </application>
 
 </manifest>
