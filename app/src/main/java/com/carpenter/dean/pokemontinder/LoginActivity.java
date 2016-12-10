@@ -67,21 +67,21 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mFirebaseUser = firebaseAuth.getCurrentUser();
-                if (progressDialog != null)
+                if(progressDialog != null)
                     progressDialog.dismiss();
-                if (mFirebaseUser != null) {
+                if(mFirebaseUser != null) {
                     databaseReference.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     User user = dataSnapshot.getValue(User.class);
-                                    if (user == null && pressedSignIn) {
+                                    if(user == null && pressedSignIn) {
                                         Toast.makeText(getApplicationContext(),
                                                 "ACCOUNT NOT FOUND", Toast.LENGTH_SHORT).show();
                                         pressedSignIn = false;
                                     }
 
-                                    if (user != null) {
+                                    if(user != null) {
                                         Log.d(TAG, "" + user.getName() + ": " + user.getPokemon().getName());
                                         Intent intent = MainActivity.newIntent(getApplicationContext(),
                                                 mUser);
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if(requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d("handleSignInResult", "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
+        if(result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             firebaseAuthWithGoogle(acct);
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity
                         // If sign in fails, display a message to the mFirebaseUser. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in mFirebaseUser can be handled in the listener.
-                        if (!task.isSuccessful()) {
+                        if(!task.isSuccessful()) {
                             Log.w("AUTH", "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
+        if(mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
