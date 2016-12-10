@@ -7,6 +7,7 @@ import com.carpenter.dean.pokemontinder.pokemon.Pokemon;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by deanc on 11/23/2016.
@@ -17,8 +18,8 @@ public class User implements Parcelable {
     private String uuid;
     private String name;
     private Pokemon pokemon;
-    private HashMap<String, String> likes;
-    private HashMap<String, String> matches;
+    private HashMap<String, User> likes;
+    private HashMap<String, User> matches;
 
     public User() {
         likes = new HashMap<>();
@@ -49,19 +50,19 @@ public class User implements Parcelable {
         this.uuid = uuid;
     }
 
-    public HashMap<String, String> getLikes() {
+    public HashMap<String, User> getLikes() {
         return likes;
     }
 
-    public void setLikes(HashMap<String, String> likes) {
+    public void setLikes(HashMap<String, User> likes) {
         this.likes = likes;
     }
 
-    public HashMap<String, String> getMatches() {
+    public HashMap<String, User> getMatches() {
         return matches;
     }
 
-    public void setMatches(HashMap<String, String> matches) {
+    public void setMatches(HashMap<String, User> matches) {
         this.matches = matches;
     }
 
@@ -73,17 +74,17 @@ public class User implements Parcelable {
 
         int size = in.readInt();
         likes = new HashMap<>();
-        for(int i = 0; i < size; i++){
+        for(int i = 0; i < size; i++) {
             String key = in.readString();
-            String value = in.readString();
-            likes.put(key,value);
+            User value = in.readParcelable(User.class.getClassLoader());
+            likes.put(key, value);
         }
 
         int size2 = in.readInt();
         matches = new HashMap<>();
         for(int i = 0; i < size2; i++) {
             String key = in.readString();
-            String value = in.readString();
+            User value = in.readParcelable(User.class.getClassLoader());
             matches.put(key, value);
         }
 
@@ -100,15 +101,15 @@ public class User implements Parcelable {
         dest.writeParcelable(pokemon, 0);
 
         dest.writeInt(likes.size());
-        for(Map.Entry<String,String> entry : likes.entrySet()){
+        for(Map.Entry<String, User> entry : likes.entrySet()) {
             dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
+            dest.writeParcelable(entry.getValue(), 0);
         }
 
         dest.writeInt(matches.size());
-        for(Map.Entry<String, String> entry : matches.entrySet()) {
+        for(Map.Entry<String, User> entry : matches.entrySet()) {
             dest.writeString(entry.getKey());
-            dest.writeString(entry.getValue());
+            dest.writeParcelable(entry.getValue(), 0);
         }
 
     }
@@ -122,4 +123,18 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof User)) {
+            return false;
+        }
+        User user = (User) obj;
+        return uuid.equals(((User) obj).getUuid());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, name, pokemon, likes, matches);
+    }
 }
