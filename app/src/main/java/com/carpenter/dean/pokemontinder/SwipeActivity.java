@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,6 +24,8 @@ import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class SwipeActivity extends AppCompatActivity {
@@ -35,13 +38,15 @@ public class SwipeActivity extends AppCompatActivity {
     private User mUser;
     private ArrayList<User> mUsers;
 
-    DatabaseReference dbRef;
-    DatabaseReference usersRef;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mUsersRef;
+    private DatabaseReference mUserLikesRef;
+    private DatabaseReference mUserMatchesRef;
 
     private FloatingActionButton heartButton;
     private FloatingActionButton xButton;
     private SwipeFlingAdapterView flingContainer;
-    ProgressDialog dialog;
+    private ProgressDialog dialog;
 
     public static Intent newIntent(Context context, User currentUser, ArrayList<User> users) {
         Intent intent = new Intent(context, SwipeActivity.class);
@@ -56,12 +61,14 @@ public class SwipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_swipe);
 
-        dbRef = FirebaseDatabase.getInstance().getReference();
-        usersRef = dbRef.child("users");
-
         mUser = getIntent().getParcelableExtra(USER);
-        Log.d(TAG, "USER: "+mUser.getName());
+        Log.d(TAG, "USER: " + mUser.getName());
         mUsers = getIntent().getParcelableArrayListExtra(USERS);
+
+        mDatabase = FirebaseDatabase.getInstance();
+        mUsersRef = mDatabase.getReference().child("users");
+        mUserLikesRef = mUsersRef.child(mUser.getUuid()).child("likes");
+        mUserMatchesRef = mUsersRef.child(mUser.getUuid()).child("matches");
 
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.SwipeFlingContainer);
 
@@ -90,8 +97,12 @@ public class SwipeActivity extends AppCompatActivity {
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                mUsers.remove(0);
-                mUserAdapter.notifyDataSetChanged();
+                if(mUsers.size() > 0) {
+                    mUsers.remove(0);
+                    mUserAdapter.notifyDataSetChanged();
+                }
+                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                        .show();
             }
 
             @Override
@@ -104,6 +115,24 @@ public class SwipeActivity extends AppCompatActivity {
 
             @Override
             public void onRightCardExit(Object dataObject) {
+                // Updates likes of the user logged in, while also checking for a match
+                User user = (User) dataObject;
+                Map<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put("/users/"+mUser.getUuid()+"/likes/"+user.getUuid(), user);
+
+                if(user.getLikes().values().contains(mUser)) {
+                    Toast.makeText(getApplicationContext(), "Its a match!",
+                            Toast.LENGTH_LONG).show();
+                    // updating matches for current user
+                    childUpdates.put("/users/"+mUser.getUuid()+"/matches/"+user.getUuid(),
+                            user);
+                    // updating matches for the user that the current user just matched with
+                    childUpdates.put("/users/"+user.getUuid()+"/matches/"+mUser.getUuid(),
+                            mUser);
+                }
+                mDatabase.getReference().updateChildren(childUpdates);
+
+
             }
 
             @Override
@@ -114,8 +143,8 @@ public class SwipeActivity extends AppCompatActivity {
                 Log.d("LIST", "notified");
                 i++;
                 */
-                addUsers(4);
-                mUserAdapter.notifyDataSetChanged();
+                //addUsers(4);
+                //mUserAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -143,7 +172,7 @@ public class SwipeActivity extends AppCompatActivity {
             // Get the data item for this position
             // Check if an existing view is being reused, otherwise inflate the view
 
-            if (convertView == null) {
+            if(convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_pokemon_view, parent, false);
             }
             TextView pokemonName = (TextView) convertView.findViewById(R.id.pokemon_name);
@@ -154,47 +183,5 @@ public class SwipeActivity extends AppCompatActivity {
 
             return convertView;
         }
-    }
-/*
-    public void addPokemon(int numOfPokemon) {
-        new PokemonDownloader().getPokemon(numOfPokemon, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                final Gson gson = new Gson();
-
-                try {
-                    Pokemon pokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
-                    mPokemonArrayList.add(pokemon);
-                    Log.d("POKEMON CREATED: ", pokemon.getName() + ", URL: " + pokemon.getPokemonUrl().getUrl() +
-                            ", Pic URL: " + pokemon.getSprites().getFrontDefault());
-                } catch (Exception errSwipe) {
-                    Log.e("Network Error Swipe", errSwipe.toString());
-                }
-            }
-        });
-    }
-    */
-
-    public void addUsers(int numOfUsers) {
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // need to remove likes & matches when adding new users
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    mUsers.add(child.getValue(User.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
     }
 }
