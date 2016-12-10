@@ -77,13 +77,13 @@ public class CreateAccountActivity extends AppCompatActivity
         mCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mUser == null) {
+                if(mUser == null) {
                     Toast.makeText(getApplicationContext(), "Must sign in with Google",
                             Toast.LENGTH_LONG).show();
-                } else if (mUser.getPokemon() == null) {
+                } else if(mUser.getPokemon() == null) {
                     Toast.makeText(getApplicationContext(), "Must choose a Pokemon!",
                             Toast.LENGTH_LONG).show();
-                } else if (mUser.getName() != null && mUser.getUuid() != null) {
+                } else if(mUser.getName() != null && mUser.getUuid() != null) {
                     mDatabase.child("users").child(mUser.getUuid()).setValue(mUser);
                     Intent intent = MainActivity.newIntent(getApplicationContext(), mUser);
                     startActivity(intent);
@@ -95,7 +95,7 @@ public class CreateAccountActivity extends AppCompatActivity
         mPokemonEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
+                if(hasFocus) {
                     mPokemonEditText.setHint(R.string.pokemon_choice_hint);
                 } else {
                     mPokemonEditText.setHint("");
@@ -130,7 +130,7 @@ public class CreateAccountActivity extends AppCompatActivity
                                             + mPokemon.getPokemonUrl().getUrl() +
                                             ", Pic URL: " + mPokemon.getSprites().getFrontDefault());
                                     final String picUrl = mPokemon.getSprites().getFrontDefault();
-                                    if (picUrl != null) {
+                                    if(picUrl != null) {
                                         CreateAccountActivity.this.runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -142,7 +142,7 @@ public class CreateAccountActivity extends AppCompatActivity
                                     mUser.setPokemon(mPokemon);
                                     progressDialog.dismiss();
 
-                                } catch (Exception errSwipe) {
+                                } catch(Exception errSwipe) {
                                     Log.e("Network Error: CAA", errSwipe.toString());
                                     progressDialog.dismiss();
                                     Toast.makeText(getApplicationContext(), "Network Error downloading Pokemon",
@@ -160,7 +160,7 @@ public class CreateAccountActivity extends AppCompatActivity
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 mFirebaseUser = firebaseAuth.getCurrentUser();
-                if (mFirebaseUser != null) {
+                if(mFirebaseUser != null) {
                     mUser.setUuid(mFirebaseUser.getUid());
                     mUser.setName(mFirebaseUser.getDisplayName());
                     Log.d("onAuthStateChanged", "signed_in:" + mFirebaseUser.getUid());
@@ -202,7 +202,7 @@ public class CreateAccountActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
+        if(requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
@@ -210,7 +210,7 @@ public class CreateAccountActivity extends AppCompatActivity
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d("handleSignInResult", "handleSignInResult:" + result.isSuccess());
-        if (result.isSuccess()) {
+        if(result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
             Toast.makeText(this, acct.getDisplayName(), Toast.LENGTH_SHORT).show();
@@ -233,7 +233,7 @@ public class CreateAccountActivity extends AppCompatActivity
                         // If sign in fails, display a message to the mFirebaseUser. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in mFirebaseUser can be handled in the listener.
-                        if (!task.isSuccessful()) {
+                        if(!task.isSuccessful()) {
                             Log.w("AUTH", "signInWithCredential", task.getException());
                             Toast.makeText(CreateAccountActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -252,7 +252,7 @@ public class CreateAccountActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        if (mAuthListener != null) {
+        if(mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
