@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  */
 
 /** This class is needed since there is a nested 'pokemon' JSON object in the .. /pokemon-form api call
- * This nested pokemon object contains 'name', and 'url', we only need to URL. Allows us to now use
+ * This nested pokemon object contains 'name', and 'url', we only need the URL. Allows us to now use
  * Gson with the main Pokemon class.
  */
 public class PokemonUrl implements Parcelable {
