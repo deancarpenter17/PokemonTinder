@@ -30,8 +30,6 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -255,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
+                getSupportActionBar().setTitle("Options");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
