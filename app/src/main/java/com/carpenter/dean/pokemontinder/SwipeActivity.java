@@ -3,30 +3,33 @@ package com.carpenter.dean.pokemontinder;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class SwipeActivity extends AppCompatActivity {
 
@@ -42,6 +45,12 @@ public class SwipeActivity extends AppCompatActivity {
     private DatabaseReference mUsersRef;
     private DatabaseReference mUserLikesRef;
     private DatabaseReference mUserMatchesRef;
+
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mDrawerAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private String mActivityTitle;
 
     private FloatingActionButton heartButton;
     private FloatingActionButton xButton;
@@ -71,6 +80,34 @@ public class SwipeActivity extends AppCompatActivity {
         mUserMatchesRef = mUsersRef.child(mUser.getUuid()).child("matches");
 
         flingContainer = (SwipeFlingAdapterView) findViewById(R.id.SwipeFlingContainer);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_swipe);
+        mActivityTitle = getTitle().toString();
+        mDrawerList = (ListView) findViewById(R.id.navListSwipe);
+        addDrawerItems();
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch(position) {
+                    case 0: {
+                        Toast.makeText(getApplicationContext(), "Messages", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case 1: {
+                        Toast.makeText(getApplicationContext(), "Matches", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case 2: {
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                        break;
+                    }
+                }
+            }
+        });
+        setupDrawer();
 
         xButton = (FloatingActionButton) findViewById(R.id.x_button);
         xButton.setOnClickListener(new View.OnClickListener() {
@@ -183,5 +220,53 @@ public class SwipeActivity extends AppCompatActivity {
 
             return convertView;
         }
+    }
+
+    private void addDrawerItems() {
+        String[] drawerOptions = {"Messages", "Matches", "Sign out"};
+        mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
+        mDrawerList.setAdapter(mDrawerAdapter);
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Options");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 }
