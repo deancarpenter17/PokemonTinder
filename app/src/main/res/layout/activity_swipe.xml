@@ -1,48 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/activity_swipe"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.carpenter.dean.pokemontinder.SwipeActivity"
-    >
 
-    <com.lorentzos.flingswipe.SwipeFlingAdapterView
-        android:id="@+id/SwipeFlingContainer"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout_swipe"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        tools:context="com.carpenter.dean.pokemontinder.SwipeActivity"
+        >
 
-        />
+        <com.lorentzos.flingswipe.SwipeFlingAdapterView
+            android:id="@+id/SwipeFlingContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/x_button"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        android:layout_marginStart="110dp"
-        android:background="@android:color/white"
-        android:scaleType="fitXY"
-        android:src="@drawable/tinder_x"
-        app:elevation="4dp"
-        app:backgroundTint="@android:color/white"
-        />
+            />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/heart_button"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        android:layout_marginStart="190dp"
-        android:scaleType="fitXY"
-        android:background="@android:color/white"
-        android:baselineAlignBottom="true"
-        android:src="@drawable/tinder_heart"
-        app:elevation="4dp"
-        app:backgroundTint="@android:color/white"
-        />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/x_button"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dp"
+            android:layout_marginStart="110dp"
+            android:background="@android:color/white"
+            android:scaleType="fitXY"
+            android:src="@drawable/tinder_x"
+            app:backgroundTint="@android:color/white"
+            app:elevation="4dp"
+            />
 
-</RelativeLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/heart_button"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dp"
+            android:layout_marginStart="190dp"
+            android:background="@android:color/white"
+            android:baselineAlignBottom="true"
+            android:scaleType="fitXY"
+            android:src="@drawable/tinder_heart"
+            app:backgroundTint="@android:color/white"
+            app:elevation="4dp"
+            />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/navListSwipe"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:background="#ffeeeeee"/>
+
+</android.support.v4.widget.DrawerLayout>
+
