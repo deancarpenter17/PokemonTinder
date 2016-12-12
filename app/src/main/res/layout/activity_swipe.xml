@@ -19,17 +19,16 @@
 
         <com.lorentzos.flingswipe.SwipeFlingAdapterView
             android:id="@+id/SwipeFlingContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-            />
+            android:layout_above="@+id/heart_button"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/x_button"
             android:layout_width="75dp"
             android:layout_height="75dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="60dp"
+            android:layout_below="@id/SwipeFlingContainer"
             android:layout_marginStart="110dp"
             android:background="@android:color/white"
             android:scaleType="fitXY"
@@ -60,7 +59,8 @@
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
-        android:background="#ffeeeeee"/>
+        android:background="#ffeeeeee"
+        tools:ignore="RtlHardcoded"/>
 
 </android.support.v4.widget.DrawerLayout>
 
