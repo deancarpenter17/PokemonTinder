@@ -30,6 +30,10 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private String mActivityTitle;
 
 
-    private ArrayList<User> mUsers;
+    private Map<String, User> mUsers;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         mUserLoggedIn = (TextView) findViewById(R.id.main_activity_user_logged_in_text_view);
         progressDialog = ProgressDialog.show(this, "Turning the wrenches..",
                 "Loading", true);
-        mUsers = new ArrayList<>();
+        mUsers = new HashMap<>();
 
         if(getIntent().getParcelableExtra(USER) != null) {
             mUser = getIntent().getParcelableExtra(USER);
@@ -96,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case 1: {
-                        Toast.makeText(getApplicationContext(), "Matches", Toast.LENGTH_LONG).show();
+                        startActivity(MatchesActivity.newIntent(getApplicationContext(), mUser));
                         break;
                     }
                     case 2: {
@@ -119,7 +123,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(mUsers.size() > 0) {
                     Intent intent = SwipeActivity.newIntent(getApplicationContext(),
-                            mUser, mUsers);
+                            mUser, new ArrayList<>(mUsers.values()));
+                    int i = 0 ;
+
                     startActivity(intent);
                 } else Toast.makeText(getApplicationContext(),
                         "No more users in dB! ", Toast.LENGTH_SHORT).show();
@@ -220,15 +226,17 @@ public class MainActivity extends AppCompatActivity {
                 // need to remove likes & matches when adding new users
                 for(DataSnapshot child : dataSnapshot.getChildren()) {
                     User user = child.getValue(User.class);
-                    Log.d(TAG, "USER ADDED: " + user.getName());
-                    mUsers.add(user);
+                    Log.d(TAG, "USER ADDED: " + user.getUuid());
+                    mUsers.put(user.getUuid(), user);
                 }
                 Log.d(TAG, "SIZE OF mUSERS: " + mUsers.size());
                 // removes previous likes from users pool
-                if(mUser != null)
-                    mUsers.removeAll(mUser.getLikes().values());
+                if(mUser != null) {
+                    Set<String> userLikes = mUser.getLikes().keySet();
+                    mUsers.keySet().removeAll(userLikes); // remove all previous likes from user pool
+                    mUsers.keySet().remove(mUser.getUuid()); // remove yourself from user pool
+                }
                 // removes current user from users pool
-                mUsers.remove(mUser);
                 progressDialog.dismiss();
             }
 
