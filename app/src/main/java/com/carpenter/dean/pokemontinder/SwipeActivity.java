@@ -71,7 +71,7 @@ public class SwipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_swipe);
 
         mUser = getIntent().getParcelableExtra(USER);
-        Log.d(TAG, "USER: " + mUser.getName());
+        Log.d(TAG, "Current USER: " + mUser.getName());
         mUsers = getIntent().getParcelableArrayListExtra(USERS);
 
         mDatabase = FirebaseDatabase.getInstance();
@@ -96,7 +96,7 @@ public class SwipeActivity extends AppCompatActivity {
                         break;
                     }
                     case 1: {
-                        Toast.makeText(getApplicationContext(), "Matches", Toast.LENGTH_LONG).show();
+                        startActivity(MatchesActivity.newIntent(getApplicationContext(), mUser));
                         break;
                     }
                     case 2: {
@@ -155,17 +155,21 @@ public class SwipeActivity extends AppCompatActivity {
                 // Updates likes of the user logged in, while also checking for a match
                 User user = (User) dataObject;
                 Map<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put("/users/"+mUser.getUuid()+"/likes/"+user.getUuid(), user);
+                User tempUser = new User(user.getUuid(), user.getName());
+                childUpdates.put("/users/"+mUser.getUuid()+"/likes/"+user.getUuid(), tempUser);
 
-                if(user.getLikes().values().contains(mUser)) {
+                Log.d(TAG, ""+user.getLikes().keySet().contains(mUser.getUuid()));
+
+                if(user.getLikes().keySet().contains(mUser.getUuid())) {
                     Toast.makeText(getApplicationContext(), "Its a match!",
                             Toast.LENGTH_LONG).show();
                     // updating matches for current user
                     childUpdates.put("/users/"+mUser.getUuid()+"/matches/"+user.getUuid(),
-                            user);
+                            tempUser);
                     // updating matches for the user that the current user just matched with
+                    tempUser = new User(mUser.getUuid(), mUser.getName());
                     childUpdates.put("/users/"+user.getUuid()+"/matches/"+mUser.getUuid(),
-                            mUser);
+                            tempUser);
                 }
                 mDatabase.getReference().updateChildren(childUpdates);
 
