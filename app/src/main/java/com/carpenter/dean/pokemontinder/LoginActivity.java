@@ -45,9 +45,9 @@ public class LoginActivity extends AppCompatActivity
     ProgressDialog progressDialog;
 
     private User mUser;
-    Pokemon mPokemon;
+    private Pokemon mPokemon;
 
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private FirebaseUser mFirebaseUser;
     private FirebaseAuth.AuthStateListener mAuthListener;
