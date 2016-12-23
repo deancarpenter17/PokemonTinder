@@ -26,6 +26,13 @@ public class User implements Parcelable {
         matches = new HashMap<>();
     }
 
+    public User(String uuid, String name) {
+        this.uuid = uuid;
+        this.name = name;
+        likes = new HashMap<>();
+        matches = new HashMap<>();
+    }
+
     public String getName() {
         return name;
     }
