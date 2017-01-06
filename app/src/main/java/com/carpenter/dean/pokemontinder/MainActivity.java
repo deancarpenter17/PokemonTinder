@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private User mUser;
     private Pokemon mPokemon;
     private Button mFindMatchesButton;
-    private Button mSignoutButton;
     private TextView mUserLoggedIn;
     private ProgressDialog progressDialog;
 
@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-
-
-    private Map<String, User> mUsers;
 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
@@ -79,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         mUserLoggedIn = (TextView) findViewById(R.id.main_activity_user_logged_in_text_view);
         progressDialog = ProgressDialog.show(this, "Turning the wrenches..",
                 "Loading", true);
-        mUsers = new HashMap<>();
 
         if(getIntent().getParcelableExtra(USER) != null) {
             mUser = getIntent().getParcelableExtra(USER);
@@ -113,22 +109,16 @@ public class MainActivity extends AppCompatActivity {
         });
         setupDrawer();
 
-        //  randomNames();
+//        randomNames();
         hasAccount();
-        addUsers();
 
         mFindMatchesButton = (Button) findViewById(R.id.main_activity_find_matches_button);
         mFindMatchesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mUsers.size() > 0) {
-                    Intent intent = SwipeActivity.newIntent(getApplicationContext(),
-                            mUser, new ArrayList<>(mUsers.values()));
-                    int i = 0 ;
-
-                    startActivity(intent);
-                } else Toast.makeText(getApplicationContext(),
-                        "No more users in dB! ", Toast.LENGTH_SHORT).show();
+                Intent intent = SwipeActivity.newIntent(getApplicationContext(),
+                        mUser);
+                startActivity(intent);
             }
         });
 
@@ -170,82 +160,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         }
-    }
-
-    //generates random names for db
-    public void randomNames() {
-
-        final ArrayList<String> names = new ArrayList<>();
-        names.add("test16");
-        names.add("test17");
-        names.add("test18");
-        names.add("test19");
-        names.add("test20");
-        names.add("test21");
-        names.add("test22");
-        names.add("test23");
-        names.add("test24");
-        names.add("test25");
-        names.add("test26");
-        names.add("test27");
-        names.add("test28");
-        names.add("test29");
-        names.add("test30");
-
-        final ArrayList<Integer> ids = new ArrayList<>();
-        for(int i = 0; i < 15; i++) {
-            int randomNum = 1 + (int) (Math.random() * ((721 - 1) + 1));
-            ids.add(0, randomNum);
-        }
-
-        new PokemonDownloader().getPokemon(15, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final Gson gson = new Gson();
-                Pokemon pokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
-                User user = new User();
-                user.setUuid("" + ids.remove(0));
-                user.setName("" + names.remove(0));
-                user.setPokemon(pokemon);
-                databaseReference.child("users").child(user.getUuid()).setValue(user);
-
-                Log.d(TAG, "" + user.getName());
-            }
-        });
-    }
-
-    public void addUsers() {
-        databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // need to remove likes & matches when adding new users
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    User user = child.getValue(User.class);
-                    Log.d(TAG, "USER ADDED: " + user.getUuid());
-                    mUsers.put(user.getUuid(), user);
-                }
-                Log.d(TAG, "SIZE OF mUSERS: " + mUsers.size());
-                // removes previous likes from users pool
-                if(mUser != null) {
-                    Set<String> userLikes = mUser.getLikes().keySet();
-                    mUsers.keySet().removeAll(userLikes); // remove all previous likes from user pool
-                    mUsers.keySet().remove(mUser.getUuid()); // remove yourself from user pool
-                }
-                // removes current user from users pool
-                progressDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "Error accessing user database!");
-                progressDialog.dismiss();
-            }
-        });
     }
 
     private void addDrawerItems() {
