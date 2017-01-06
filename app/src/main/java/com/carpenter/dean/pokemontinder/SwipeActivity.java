@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -21,25 +22,30 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.carpenter.dean.pokemontinder.pokemon.Pokemon;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class SwipeActivity extends AppCompatActivity {
 
     private static final String USER = "user";
-    private static final String USERS = "users";
     private static final String TAG = "SwipeActivity";
 
     private UserAdapter mUserAdapter;
     private User mUser;
-    private ArrayList<User> mUsers;
+    private ArrayList<User> mUsersList;
+    private HashMap<String, User> mMatches;
 
     private FirebaseDatabase mDatabase;
     private DatabaseReference mUsersRef;
@@ -57,10 +63,9 @@ public class SwipeActivity extends AppCompatActivity {
     private SwipeFlingAdapterView flingContainer;
     private ProgressDialog dialog;
 
-    public static Intent newIntent(Context context, User currentUser, ArrayList<User> users) {
+    public static Intent newIntent(Context context, User currentUser) {
         Intent intent = new Intent(context, SwipeActivity.class);
         intent.putExtra(USER, currentUser);
-        intent.putParcelableArrayListExtra(USERS, users);
         return intent;
     }
 
@@ -72,14 +77,14 @@ public class SwipeActivity extends AppCompatActivity {
 
         mUser = getIntent().getParcelableExtra(USER);
         Log.d(TAG, "Current USER: " + mUser.getName());
-        mUsers = getIntent().getParcelableArrayListExtra(USERS);
+        mUsersList = new ArrayList<>();
+
+        mMatches = mUser.getMatches();
 
         mDatabase = FirebaseDatabase.getInstance();
         mUsersRef = mDatabase.getReference().child("users");
         mUserLikesRef = mUsersRef.child(mUser.getUuid()).child("likes");
         mUserMatchesRef = mUsersRef.child(mUser.getUuid()).child("matches");
-
-        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.SwipeFlingContainer);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -109,33 +114,17 @@ public class SwipeActivity extends AppCompatActivity {
         });
         setupDrawer();
 
-        xButton = (FloatingActionButton) findViewById(R.id.x_button);
-        xButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flingContainer.getTopCardListener().selectLeft();
-            }
-        });
-
-        heartButton = (FloatingActionButton) findViewById(R.id.heart_button);
-        heartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flingContainer.getTopCardListener().selectRight();
-            }
-        });
-
-        mUserAdapter = new UserAdapter(getApplicationContext(), mUsers);
+        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.SwipeFlingContainer);
+        mUserAdapter = new UserAdapter(getApplicationContext(), mUsersList);
         flingContainer.setAdapter(mUserAdapter);
-
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
 
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                if(mUsers.size() > 0) {
-                    mUsers.remove(0);
+                if(mUsersList.size() > 0) {
+                    mUsersList.remove(0);
                     mUserAdapter.notifyDataSetChanged();
                 }
                 else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
@@ -148,17 +137,25 @@ public class SwipeActivity extends AppCompatActivity {
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
 
+                User user = (User) dataObject;
+                Map<String, Object> childUpdates = new HashMap<>();
+                User tempUser = new User(user.getUuid(), user.getName());
+                childUpdates.put("/users/"+mUser.getUuid()+"/dislikes/"+user.getUuid(), tempUser);
+                mDatabase.getReference().updateChildren(childUpdates);
+
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
                 // Updates likes of the user logged in, while also checking for a match
+                // tempUser: lightweight user to be stored in dB under 'likes'/'matches' for current user
                 User user = (User) dataObject;
                 Map<String, Object> childUpdates = new HashMap<>();
                 User tempUser = new User(user.getUuid(), user.getName());
+                tempUser.setPokemon(user.getPokemon());
                 childUpdates.put("/users/"+mUser.getUuid()+"/likes/"+user.getUuid(), tempUser);
 
-                Log.d(TAG, ""+user.getLikes().keySet().contains(mUser.getUuid()));
+                Log.d(TAG, "Match? :"+user.getLikes().keySet().contains(mUser.getUuid()));
 
                 if(user.getLikes().keySet().contains(mUser.getUuid())) {
                     Toast.makeText(getApplicationContext(), "Its a match!",
@@ -168,6 +165,7 @@ public class SwipeActivity extends AppCompatActivity {
                             tempUser);
                     // updating matches for the user that the current user just matched with
                     tempUser = new User(mUser.getUuid(), mUser.getName());
+                    tempUser.setPokemon(mUser.getPokemon());
                     childUpdates.put("/users/"+user.getUuid()+"/matches/"+mUser.getUuid(),
                             tempUser);
                 }
@@ -201,6 +199,55 @@ public class SwipeActivity extends AppCompatActivity {
 
             }
         });
+
+        mUsersRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // need to remove likes & matches when adding new users
+                HashMap<String, User> mUsersHashMap = new HashMap<>();
+                for(DataSnapshot child : dataSnapshot.getChildren()) {
+                    User user = child.getValue(User.class);
+                    Log.d(TAG, "USER ADDED: " + user.getUuid() + "Pokemon: " + user.getPokemon().getName() +
+                            "Weight: " + user.getPokemon().getWeight());
+                    mUsersHashMap.put(user.getUuid(), user);
+                }
+                mUser = mUsersHashMap.get(mUser.getUuid());
+                Log.d(TAG, "SIZE OF mUSERS before removal: " + mUsersHashMap.size());
+                // removes previous likes from users pool
+                if(mUser != null) {
+                    Set<String> userLikes = mUser.getLikes().keySet();
+                    Set<String> userDislikes = mUser.getDislikes().keySet();
+                    mUsersHashMap.keySet().removeAll(userLikes); // remove all previous likes from user pool
+                    mUsersHashMap.keySet().removeAll(userDislikes);
+                    mUsersHashMap.keySet().remove(mUser.getUuid()); // remove yourself from user pool
+                }
+                mUsersList.clear();
+                mUsersList.addAll(mUsersHashMap.values());
+                Log.d(TAG, "SIZE OF mUSERS after removal: " + mUsersHashMap.size());
+                updateUi();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "Error accessing user database!");
+            }
+        });
+
+        xButton = (FloatingActionButton) findViewById(R.id.x_button);
+        xButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                flingContainer.getTopCardListener().selectLeft();
+            }
+        });
+
+        heartButton = (FloatingActionButton) findViewById(R.id.heart_button);
+        heartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                flingContainer.getTopCardListener().selectRight();
+            }
+        });
     }
 
     private class UserAdapter extends ArrayAdapter<User> {
@@ -209,21 +256,53 @@ public class SwipeActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View v, ViewGroup parent) {
             // Get the data item for this position
             // Check if an existing view is being reused, otherwise inflate the view
 
-            if(convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_pokemon_view, parent, false);
+            if(v == null) {
+                v = LayoutInflater.from(getContext()).inflate(R.layout.list_pokemon_view, parent, false);
             }
-            TextView pokemonName = (TextView) convertView.findViewById(R.id.pokemon_name);
-            pokemonName.setText(mUsers.get(position).getPokemon().getName());
-            ImageView pokemonPicture = (ImageView) convertView.findViewById(R.id.pokemon_picture);
-            Picasso.with(getContext()).load(mUsers.get(position).getPokemon().getSprites().getFrontDefault()).into(pokemonPicture);
+            if(mUsersList.size() > 0) {
+                Pokemon currentPokemon = mUsersList.get(position).getPokemon();
+                TextView pokemonName = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_name);
+                pokemonName.setText(currentPokemon.getName());
 
+                ImageView pokemonPicture = (ImageView) v.findViewById(R.id.list_pokemon_view_pokemon_picture);
+                Picasso.with(getContext()).load(currentPokemon.getSprites().getFrontDefault()).into(pokemonPicture);
 
-            return convertView;
+                TextView pokemonTypes = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_types);
+                if(currentPokemon.getTypes().size() == 1) {
+                    pokemonTypes.setText(currentPokemon.getTypes().get(0).getType().getName() +
+                            " type");
+                } else if(currentPokemon.getTypes().size() == 2) {
+                    pokemonTypes.setText(currentPokemon.getTypes().get(0).getType().getName()
+                            + " and " +
+                            currentPokemon.getTypes().get(1).getType().getName() +
+                            " type");
+                }
+                TextView height = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_height);
+                height.setText("Height:\n " + currentPokemon.getHeight() + " ft");
+                TextView weight = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_weight);
+                weight.setText("Weight:\n" + currentPokemon.getWeight() + " lbs");
+
+                TextView moveOne = (TextView) v.findViewById(R.id.list_pokemon_view_move_one);
+                moveOne.setText("First move: " + currentPokemon.getMoves().get(0).getMove().getName());
+                TextView moveTwo = (TextView) v.findViewById(R.id.list_pokemon_view_move_two);
+                moveTwo.setText(("Second move: " + currentPokemon.getMoves().get(1).getMove().getName()));
+
+                TextView usersName = (TextView) v.findViewById(R.id.list_pokemon_view_users_name);
+                usersName.setText("User: " + mUsersList.get(position).getName());
+            }
+
+            return v;
         }
+    }
+
+    public void updateUi() {
+
+        Log.i(TAG, "Updating UI, mUsersList count: " + mUsersList.size());
+        mUserAdapter.notifyDataSetChanged();
     }
 
     private void addDrawerItems() {
@@ -274,3 +353,60 @@ public class SwipeActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 }
+
+
+/*
+//generates random names for db
+    public void randomNames() {
+
+        final ArrayList<String> names = new ArrayList<>();
+        names.add("dave");
+        names.add("billy");
+        names.add("brittany");
+        names.add("adam");
+        names.add("jeremy");
+        names.add("rick");
+        names.add("amirah");
+        names.add("jacob");
+        names.add("benny");
+        names.add("bella");
+        names.add("steven");
+        names.add("jessica");
+        names.add("mariah");
+        names.add("erik");
+        names.add("jodi");
+
+        final ArrayList<Integer> ids = new ArrayList<>();
+        for(int i = 0; i < 15; i++) {
+            int randomNum = 1 + (int) (Math.random() * ((721 - 1) + 1));
+            ids.add(0, randomNum);
+        }
+
+        new PokemonDownloader().getPokemon(15, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final Gson gson = new Gson();
+                Pokemon pokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
+                // Database contains heights in decimeters , and weight in hectograms
+                // Converting to United States customary units
+                // This may break if locale is not English or similar!
+                DecimalFormat df = new DecimalFormat("#.##");
+                pokemon.setHeight(Double.valueOf(df.format(pokemon.getHeight()*0.328084)));
+                pokemon.setWeight(Double.valueOf(df.format(pokemon.getWeight()*0.220462)));
+
+                User user = new User();
+                user.setUuid("" + ids.remove(0));
+                user.setName("" + names.remove(0));
+                user.setPokemon(pokemon);
+                databaseReference.child("users").child(user.getUuid()).setValue(user);
+
+                Log.d(TAG, "" + user.getName());
+            }
+        });
+    }
+ */
