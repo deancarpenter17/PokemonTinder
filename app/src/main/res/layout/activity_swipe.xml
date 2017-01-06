@@ -5,7 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout_swipe"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/pokemon_setting"
+
+    >
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,7 +24,6 @@
             android:id="@+id/SwipeFlingContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_above="@+id/heart_button"/>
 
         <android.support.design.widget.FloatingActionButton
