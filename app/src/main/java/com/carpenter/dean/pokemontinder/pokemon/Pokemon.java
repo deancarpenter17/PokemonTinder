@@ -3,8 +3,7 @@ package com.carpenter.dean.pokemontinder.pokemon;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 
 /**
  * Created by dean on 11/16/2016.
@@ -14,11 +13,16 @@ public class Pokemon implements Parcelable {
 
     private int id;
     private String name;
-    @SerializedName("pokemon")
-    private PokemonUrl pokemonUrl; // Created because there is a nested 'pokemon' jsonobject within the api call ../pokemon-form
+    private Double height;
+    private Double weight;
+    private ArrayList<Type> types;
+    private ArrayList<Move> moves;
     private Sprites sprites;
 
-    public Pokemon() {}
+    public Pokemon() {
+        types = new ArrayList<>();
+        moves = new ArrayList<>();
+    }
 
     public int getId() {
         return id;
@@ -36,31 +40,68 @@ public class Pokemon implements Parcelable {
         this.name = name;
     }
 
-    public PokemonUrl getPokemonUrl() {
-        return pokemonUrl;
-    }
-
-    public void setPokemonUrl(PokemonUrl pokemonUrl) {
-        this.pokemonUrl = pokemonUrl;
-    }
-
     public Sprites getSprites() {
         return sprites;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
+
+    public Double getHeight() {
+        return height;
+    }
+
+    public void setHeight(Double height) {
+        this.height = height;
+    }
+
+    public ArrayList<Type> getTypes() {
+        return types;
+    }
+
+    public void setTypes(ArrayList<Type> types) {
+        this.types = types;
     }
 
     public void setSprites(Sprites sprites) {
         this.sprites = sprites;
     }
 
-    // Parcelling part
-    public Pokemon(Parcel in){
-        id = in.readInt();
-        name = in.readString();
-        pokemonUrl = in.readParcelable(PokemonUrl.class.getClassLoader());
-        sprites = in.readParcelable(Sprites.class.getClassLoader());
+    public ArrayList<Move> getMoves() {
+        return moves;
     }
 
-    public int describeContents(){
+    public void setMoves(ArrayList<Move> moves) {
+        this.moves = moves;
+    }
+
+    protected Pokemon(Parcel in) {
+        id = in.readInt();
+        name = in.readString();
+        height = in.readByte() == 0x00 ? null : in.readDouble();
+        weight = in.readByte() == 0x00 ? null : in.readDouble();
+        if (in.readByte() == 0x01) {
+            types = new ArrayList<Type>();
+            in.readList(types, Type.class.getClassLoader());
+        } else {
+            types = null;
+        }
+        if (in.readByte() == 0x01) {
+            moves = new ArrayList<Move>();
+            in.readList(moves, Move.class.getClassLoader());
+        } else {
+            moves = null;
+        }
+        sprites = (Sprites) in.readValue(Sprites.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
         return 0;
     }
 
@@ -68,14 +109,41 @@ public class Pokemon implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
-        dest.writeParcelable(pokemonUrl, 0);
-        dest.writeParcelable(sprites, 0);
+        if (height == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(height);
+        }
+        if (weight == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeDouble(weight);
+        }
+        if (types == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(types);
+        }
+        if (moves == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(moves);
+        }
+        dest.writeValue(sprites);
     }
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Pokemon> CREATOR = new Parcelable.Creator<Pokemon>() {
+        @Override
         public Pokemon createFromParcel(Parcel in) {
             return new Pokemon(in);
         }
 
+        @Override
         public Pokemon[] newArray(int size) {
             return new Pokemon[size];
         }
