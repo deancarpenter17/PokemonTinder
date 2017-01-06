@@ -25,7 +25,7 @@ public class PokemonDownloader {
 
         Request request = new Request.Builder()
                 .get()
-                .url("http://pokeapi.co/api/v2/pokemon-form/" + pokemonId)
+                .url("http://pokeapi.co/api/v2/pokemon/" + pokemonId)
                 .build();
         client.newCall(request).enqueue(callback);
     }
@@ -37,7 +37,7 @@ public class PokemonDownloader {
 
             Request request = new Request.Builder()
                     .get()
-                    .url("http://pokeapi.co/api/v2/pokemon-form/" + randomNum)
+                    .url("http://pokeapi.co/api/v2/pokemon/" + randomNum)
                     .build();
             client.newCall(request).enqueue(callback);
         }
