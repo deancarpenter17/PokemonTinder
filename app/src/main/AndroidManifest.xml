@@ -22,6 +22,8 @@
         <activity android:name=".CreateAccountActivity"/>
         <activity android:name=".MatchesActivity">
         </activity>
+        <activity android:name=".MessageActivity">
+        </activity>
     </application>
 
 </manifest>
