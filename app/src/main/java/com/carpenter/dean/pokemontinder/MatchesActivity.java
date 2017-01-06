@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -15,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 public class MatchesActivity extends AppCompatActivity {
 
@@ -51,13 +53,16 @@ public class MatchesActivity extends AppCompatActivity {
             matchesRef = mDatabaseRef.child("users").child(mUser.getUid()).child("matches");
             mAdapter = new FirebaseRecyclerAdapter<User, UserViewHolder>(
                     User.class,
-                    android.R.layout.two_line_list_item,
+                    R.layout.matches_item,
                     UserViewHolder.class,
                     matchesRef
             ) {
                 @Override
                 protected void populateViewHolder(UserViewHolder viewHolder, User model, int position) {
-                    viewHolder.mText1.setText(model.getName());
+                    viewHolder.mUserName.setText(model.getName());
+                    Picasso.with(getApplicationContext())
+                            .load(model.getPokemon().getSprites().getFrontDefault())
+                            .into(viewHolder.usersPokemonImage);
                     viewHolder.matchesUser = model;
                     Log.d(TAG, "User in Viewholder: "+model.getName());
                 }
@@ -70,15 +75,15 @@ public class MatchesActivity extends AppCompatActivity {
         implements View.OnClickListener {
 
         final Context context;
-        TextView mText1;
-        TextView mText2;
+        TextView mUserName;
+        ImageView usersPokemonImage;
         User matchesUser;
 
         public UserViewHolder(View v) {
             super(v);
             context = v.getContext();
-            mText1 = (TextView) v.findViewById(android.R.id.text1);
-            mText2 = (TextView) v.findViewById(android.R.id.text2);
+            mUserName = (TextView) v.findViewById(R.id.matches_user_name);
+            usersPokemonImage = (ImageView) v.findViewById(R.id.matches_user_picture);
             v.setOnClickListener(this);
         }
 
