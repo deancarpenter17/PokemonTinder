@@ -19,10 +19,12 @@ public class User implements Parcelable {
     private String name;
     private Pokemon pokemon;
     private HashMap<String, User> likes;
+    private HashMap<String, User> dislikes;
     private HashMap<String, User> matches;
 
     public User() {
         likes = new HashMap<>();
+        dislikes = new HashMap<>();
         matches = new HashMap<>();
     }
 
@@ -30,6 +32,7 @@ public class User implements Parcelable {
         this.uuid = uuid;
         this.name = name;
         likes = new HashMap<>();
+        dislikes = new HashMap<>();
         matches = new HashMap<>();
     }
 
@@ -65,6 +68,14 @@ public class User implements Parcelable {
         this.likes = likes;
     }
 
+    public HashMap<String, User> getDislikes() {
+        return dislikes;
+    }
+
+    public void setDislikes(HashMap<String, User> dislikes) {
+        this.dislikes = dislikes;
+    }
+
     public HashMap<String, User> getMatches() {
         return matches;
     }
@@ -85,6 +96,14 @@ public class User implements Parcelable {
             String key = in.readString();
             User value = in.readParcelable(User.class.getClassLoader());
             likes.put(key, value);
+        }
+
+        int size1 = in.readInt();
+        dislikes = new HashMap<>();
+        for(int i = 0; i < size1; i++) {
+            String key = in.readString();
+            User value = in.readParcelable(User.class.getClassLoader());
+            dislikes.put(key, value);
         }
 
         int size2 = in.readInt();
@@ -112,6 +131,12 @@ public class User implements Parcelable {
             dest.writeString(entry.getKey());
             dest.writeParcelable(entry.getValue(), 0);
         }
+        dest.writeInt(dislikes.size());
+        for(Map.Entry<String, User> entry : dislikes.entrySet()) {
+            dest.writeString(entry.getKey());
+            dest.writeParcelable(entry.getValue(), 0);
+        }
+
 
         dest.writeInt(matches.size());
         for(Map.Entry<String, User> entry : matches.entrySet()) {
