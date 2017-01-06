@@ -10,10 +10,10 @@
     </style>
 
     <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Colored">
-        <item name="colorAccent">@android:color/white</item>
-        <item name="colorButtonNormal">@android:color/white</item>
-        <item name="android:background">@android:color/white</item>
-        <item name="android:textColor">#616161</item>
+        <item name="colorAccent">@color/pokemon_red</item>
+        <item name="colorButtonNormal">@color/pokemon_red</item>
+        <item name="android:background">@color/pokemon_red</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:padding">8dp</item>
     </style>
 
