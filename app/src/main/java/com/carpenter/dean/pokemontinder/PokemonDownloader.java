@@ -11,7 +11,8 @@ import okhttp3.Request;
  */
 
 public class PokemonDownloader {
-    public static final String TAG = "PokemonDownloader";
+
+    private static final String TAG = "PokemonDownloader";
     private OkHttpClient client;
 
     public PokemonDownloader() {
