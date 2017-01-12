@@ -23,13 +23,13 @@ public class MatchesActivity extends AppCompatActivity {
     private static final String TAG = "MatchesActivity";
     private static final String USER = "user";
 
-    RecyclerView mRecyclerView;
-    FirebaseRecyclerAdapter<User, UserViewHolder> mAdapter;
-    FirebaseUser mUser;
-    DatabaseReference mDatabaseRef;
-    DatabaseReference matchesRef;
+    private RecyclerView mRecyclerView;
+    private FirebaseRecyclerAdapter<User, UserViewHolder> mAdapter;
+    private FirebaseUser mUser;
+    private DatabaseReference mDatabaseRef;
+    private DatabaseReference matchesRef;
 
-    static User currentUser;
+    private static User currentUser;
 
     public static Intent newIntent(Context context, User currentUser) {
         Intent intent = new Intent(context, MatchesActivity.class);
@@ -89,7 +89,7 @@ public class MatchesActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            Intent intent = MessageActivity.newIntent(context, currentUser, matchesUser);
+            Intent intent = ConversationActivity.newIntent(context, currentUser, matchesUser);
             context.startActivity(intent);
         }
     }
