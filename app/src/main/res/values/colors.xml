@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">@color/pokemon_red</color>
-    <color name="colorPrimaryDark">@color/pokemon_blue</color>
+    <color name="colorPrimaryDark">@color/dark_red</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="gray">#CFD8DC</color>
+    <color name="dark_red">#C62828</color>
+
     <color name="pokemon_red">#F44336</color>
     <color name="pokemon_yellow">#ffcb05</color>
     <color name="pokemon_blue">#0071b9</color>
+    <color name="jolteon_yellow">#EECE5C</color>
+    <color name="venusaur_green">#58A7A2</color>
+    <color name="squirtle_squad_blue">#8CC5CE</color>
+    <color name="slowbro_pink">#F08C8A</color>
+    <color name="delibird_grey">#F1F2F4</color>
+
 </resources>
