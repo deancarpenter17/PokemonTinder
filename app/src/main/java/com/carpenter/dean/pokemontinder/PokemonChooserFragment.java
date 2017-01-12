@@ -144,8 +144,8 @@ public class PokemonChooserFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(getContext(), "Network Error! Check your " +
-                                                "internet connection!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getContext(), "Network Error! Could not " +
+                                                "connect to Pokeapi.co!", Toast.LENGTH_LONG).show();
                                     }
                                 });
                                 //Updating UI THREAD on BACKGROUND THREAD, POTENTIAL BUG
@@ -201,7 +201,7 @@ public class PokemonChooserFragment extends Fragment {
                                                     mPokemonMoveOneTextView.setText("First move: " + mPokemon.getMoves().get(0).getMove().getName());
                                                     mPokemonMoveTwoTextView.setText(("Second move: " + mPokemon.getMoves().get(1).getMove().getName()));
 
-                                                    mUsersNameTextView.setText(mUser.getName());
+                                                    mUsersNameTextView.setText("User: " + mUser.getName());
 
                                                 }
                                             });
