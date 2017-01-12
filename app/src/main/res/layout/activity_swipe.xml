@@ -10,51 +10,61 @@
 
     >
 
-    <RelativeLayout
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/activity_swipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context="com.carpenter.dean.pokemontinder.SwipeActivity"
         >
 
         <com.lorentzos.flingswipe.SwipeFlingAdapterView
             android:id="@+id/SwipeFlingContainer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/heart_button"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/x_button"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_below="@id/SwipeFlingContainer"
-            android:layout_marginStart="110dp"
-            android:background="@android:color/white"
-            android:scaleType="fitXY"
-            android:src="@drawable/tinder_x"
-            app:backgroundTint="@android:color/white"
-            app:elevation="4dp"
+            android:layout_height="0dp"
+            android:layout_weight="4"
             />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/heart_button"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="60dp"
-            android:layout_marginStart="190dp"
-            android:background="@android:color/white"
-            android:baselineAlignBottom="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/tinder_heart"
-            app:backgroundTint="@android:color/white"
-            app:elevation="4dp"
-            />
+        <LinearLayout
+            android:id="@+id/linear_layout_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginBottom="40dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
 
-    </RelativeLayout>
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/x_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:background="@android:color/white"
+                android:scaleType="fitXY"
+                android:src="@drawable/tinder_x"
+                app:backgroundTint="@android:color/white"
+                app:elevation="4dp"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/heart_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:background="@android:color/white"
+                android:baselineAlignBottom="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/tinder_heart"
+                app:backgroundTint="@android:color/white"
+                app:elevation="4dp"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/navListSwipe"
