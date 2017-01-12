@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0: {
-                        Toast.makeText(getApplicationContext(), "Messages", Toast.LENGTH_LONG).show();
+                        startActivity(MessagesActivity.newIntent(getApplicationContext(), mUser));
                         break;
                     }
                     case 1: {
@@ -108,8 +108,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         setupDrawer();
-
-//        randomNames();
         hasAccount();
 
         mFindMatchesButton = (Button) findViewById(R.id.main_activity_find_matches_button);
@@ -122,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        // SHOW A LOADING SCREEN WHILE ITS WAITING FOR hasAccount to succeed?
     }
 
     // Checks if user has an account and is logged in, if not, redirect to LoginActivity
@@ -134,7 +130,9 @@ public class MainActivity extends AppCompatActivity {
         if(mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             Log.d(TAG, "FIREBASE USER NOT SIGNED IN");
-            progressDialog.dismiss();
+            if(progressDialog != null) {
+                progressDialog.dismiss();
+            }
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         } else {
@@ -144,11 +142,16 @@ public class MainActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             mUser = dataSnapshot.getValue(User.class);
                             if(mUser != null) {
+                                if(progressDialog != null) {
+                                    progressDialog.dismiss();
+                                }
                                 mUserLoggedIn.setText("Welcome " + mUser.getName());
                                 Log.d(TAG, "User found: " + mUser.getName());
                             } else {
                                 Log.d(TAG, "FIREBASE USER NOT SIGNED IN");
-                                progressDialog.dismiss();
+                                if(progressDialog != null) {
+                                    progressDialog.dismiss();
+                                }
                                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                                 finish();
                             }
@@ -156,7 +159,12 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            if(progressDialog != null) {
+                                progressDialog.dismiss();
+                            }
+                            Toast.makeText(getApplicationContext(), "Unable to authenticate user!",
+                                    Toast.LENGTH_LONG).show();
+                            Log.d(TAG, databaseError.getDetails());
                         }
                     });
         }
