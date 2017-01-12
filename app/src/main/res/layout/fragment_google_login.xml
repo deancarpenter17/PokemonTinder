@@ -12,6 +12,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:text="Create account"
+        android:textStyle="bold"
         android:textSize="25dp"/>
 
     <TextView
@@ -20,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/google_login_title"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="10dp"
         android:text="@string/google_sign_in_required"/>
 
     <com.google.android.gms.common.SignInButton
