@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jolteon_yellow"
+              android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:text="Create an account"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+
+        />
+    <Button
+        android:id="@+id/create_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create account"
+        android:layout_below="@id/title_text_view"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:id="@+id/existing_users_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Existing Users"
+        android:textSize="30dp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/create_account_button"
+        android:layout_centerHorizontal="true"/>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/existing_users_text_view"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

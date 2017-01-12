@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/create_account_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="@string/create_account_title_text_view"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/choose_pokemon_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/create_account_title"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/choose_your_pokemon"
+            android:textSize="12sp"/>
+
+        <EditText
+            android:id="@+id/choose_pokemon_edit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/choose_pokemon_text_view"
+            android:layout_centerHorizontal="true"
+            android:hint="@string/pokemon_choice_hint"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:textSize="25sp"/>
+
+
+        <Button
+            android:id="@+id/find_pokemon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/choose_pokemon_edit_text"
+            android:layout_centerHorizontal="true"
+            android:text="@string/search"/>
+
+        <Button
+            android:id="@+id/account_activity_create_account_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_account"
+            android:layout_marginBottom="12dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
+
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+
+        >
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/pokemon_card_relative_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@drawable/background_with_shadow"
+            >
+
+            <TextView
+                android:id="@+id/pokemon_chooser_pokemon_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:textAllCaps="true"
+                android:textColor="@color/pokemon_blue"
+                android:textSize="25sp"
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_pokemon_types"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pokemon_chooser_pokemon_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:textAllCaps="true"
+                android:textSize="12sp"
+                />
+
+            <ImageView
+                android:id="@+id/pokemon_chooser_pokemon_picture"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_below="@id/pokemon_chooser_pokemon_types"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_pokemon_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="110dp"
+                android:layout_toStartOf="@id/pokemon_chooser_pokemon_picture"
+                android:textSize="12sp"
+
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_pokemon_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="110dp"
+                android:layout_toEndOf="@id/pokemon_chooser_pokemon_picture"
+                android:textSize="12sp"
+
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_move_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pokemon_chooser_pokemon_picture"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="2dp"
+                android:layout_marginStart="5dp"
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_move_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/pokemon_chooser_move_one"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="5dp"
+                />
+
+            <TextView
+                android:id="@+id/pokemon_chooser_users_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="3dp"
+                android:textAllCaps="true"
+                android:textColor="@color/dark_red"/>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+</LinearLayout>
