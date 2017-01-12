@@ -13,6 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="@string/create_account_title_text_view"
+        android:textStyle="bold"
         android:textSize="20sp"/>
 
     <TextView
@@ -26,13 +27,7 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
         android:text="@string/choose_your_pokemon"
-        android:textSize="10sp"/>
-
-    <!--<LinearLayout
-        android:layout_width="0px"
-        android:layout_height="0px"
-        android:focusable="true"
-        android:focusableInTouchMode="true"/>-->
+        android:textSize="12sp"/>
 
     <EditText
         android:id="@+id/choose_pokemon_edit_text"
@@ -61,9 +56,10 @@
         android:id="@+id/account_activity_create_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/create_account"
+        android:layout_marginBottom="24dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/create_account"/>
+        android:layout_centerHorizontal="true"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -92,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:textAllCaps="true"
                 android:textColor="@color/pokemon_blue"
                 android:textSize="25sp"
@@ -107,6 +103,7 @@
                 android:layout_marginTop="5dp"
                 android:textAllCaps="true"
                 android:textSize="12sp"
+                android:textColor="@color/pokemon_blue"
                 />
 
             <ImageView
@@ -126,6 +123,7 @@
                 android:layout_marginTop="110dp"
                 android:layout_toStartOf="@id/pokemon_chooser_pokemon_picture"
                 android:textSize="12sp"
+                android:textColor="@color/pokemon_blue"
 
                 />
 
@@ -138,6 +136,7 @@
                 android:layout_marginTop="110dp"
                 android:layout_toEndOf="@id/pokemon_chooser_pokemon_picture"
                 android:textSize="12sp"
+                android:textColor="@color/pokemon_blue"
 
                 />
 
@@ -149,6 +148,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="2dp"
                 android:layout_marginStart="5dp"
+                android:textColor="@color/pokemon_blue"
                 />
 
             <TextView
@@ -158,16 +158,15 @@
                 android:layout_below="@id/pokemon_chooser_move_one"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="5dp"
+                android:textColor="@color/pokemon_blue"
                 />
 
             <TextView
                 android:id="@+id/pokemon_chooser_users_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="3dp"
-                android:layout_marginEnd="3dp"
                 android:textAllCaps="true"
                 android:textColor="@color/pokemon_blue"/>
 
