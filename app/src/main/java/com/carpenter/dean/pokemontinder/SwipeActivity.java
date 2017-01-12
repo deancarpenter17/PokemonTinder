@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.carpenter.dean.pokemontinder.pokemon.Move;
 import com.carpenter.dean.pokemontinder.pokemon.Pokemon;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -29,13 +29,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class SwipeActivity extends AppCompatActivity {
 
@@ -97,7 +105,7 @@ public class SwipeActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0: {
-                        Toast.makeText(getApplicationContext(), "Messages", Toast.LENGTH_LONG).show();
+                        startActivity(MessagesActivity.newIntent(getApplicationContext(), mUser));
                         break;
                     }
                     case 1: {
@@ -126,9 +134,9 @@ public class SwipeActivity extends AppCompatActivity {
                 if(mUsersList.size() > 0) {
                     mUsersList.remove(0);
                     mUserAdapter.notifyDataSetChanged();
-                }
-                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
-                        .show();
+                } else
+                    Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                            .show();
             }
 
             @Override
@@ -140,7 +148,7 @@ public class SwipeActivity extends AppCompatActivity {
                 User user = (User) dataObject;
                 Map<String, Object> childUpdates = new HashMap<>();
                 User tempUser = new User(user.getUuid(), user.getName());
-                childUpdates.put("/users/"+mUser.getUuid()+"/dislikes/"+user.getUuid(), tempUser);
+                childUpdates.put("/users/" + mUser.getUuid() + "/dislikes/" + user.getUuid(), tempUser);
                 mDatabase.getReference().updateChildren(childUpdates);
 
             }
@@ -153,20 +161,20 @@ public class SwipeActivity extends AppCompatActivity {
                 Map<String, Object> childUpdates = new HashMap<>();
                 User tempUser = new User(user.getUuid(), user.getName());
                 tempUser.setPokemon(user.getPokemon());
-                childUpdates.put("/users/"+mUser.getUuid()+"/likes/"+user.getUuid(), tempUser);
+                childUpdates.put("/users/" + mUser.getUuid() + "/likes/" + user.getUuid(), tempUser);
 
-                Log.d(TAG, "Match? :"+user.getLikes().keySet().contains(mUser.getUuid()));
+                Log.d(TAG, "Match? :" + user.getLikes().keySet().contains(mUser.getUuid()));
 
                 if(user.getLikes().keySet().contains(mUser.getUuid())) {
                     Toast.makeText(getApplicationContext(), "Its a match!",
                             Toast.LENGTH_LONG).show();
                     // updating matches for current user
-                    childUpdates.put("/users/"+mUser.getUuid()+"/matches/"+user.getUuid(),
+                    childUpdates.put("/users/" + mUser.getUuid() + "/matches/" + user.getUuid(),
                             tempUser);
                     // updating matches for the user that the current user just matched with
                     tempUser = new User(mUser.getUuid(), mUser.getName());
                     tempUser.setPokemon(mUser.getPokemon());
-                    childUpdates.put("/users/"+user.getUuid()+"/matches/"+mUser.getUuid(),
+                    childUpdates.put("/users/" + user.getUuid() + "/matches/" + mUser.getUuid(),
                             tempUser);
                 }
                 mDatabase.getReference().updateChildren(childUpdates);
@@ -352,20 +360,14 @@ public class SwipeActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-}
 
 
-/*
-//generates random names for db
+    //generates random names for db
     public void randomNames() {
 
         final ArrayList<String> names = new ArrayList<>();
-        names.add("dave");
-        names.add("billy");
-        names.add("brittany");
-        names.add("adam");
-        names.add("jeremy");
-        names.add("rick");
+
+        names.add("krista");
         names.add("amirah");
         names.add("jacob");
         names.add("benny");
@@ -376,13 +378,29 @@ public class SwipeActivity extends AppCompatActivity {
         names.add("erik");
         names.add("jodi");
 
+        names.add("stannis");
+        names.add("brienne");
+        names.add("tyrion");
+        names.add("benji");
+        names.add("rickon");
+        names.add("denaerys");
+        names.add("sansa");
+        names.add("eddard");
+        names.add("arya");
+        names.add("cersei");
+        names.add("joffrey");
+        names.add("melisandre");
+        names.add("gregor");
+        names.add("ramsay");
+        names.add("ygritte");
+
         final ArrayList<Integer> ids = new ArrayList<>();
-        for(int i = 0; i < 15; i++) {
+        for(int i = 0; i < 25; i++) {
             int randomNum = 1 + (int) (Math.random() * ((721 - 1) + 1));
             ids.add(0, randomNum);
         }
 
-        new PokemonDownloader().getPokemon(15, new Callback() {
+        new PokemonDownloader().getPokemon(25, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -396,17 +414,34 @@ public class SwipeActivity extends AppCompatActivity {
                 // Converting to United States customary units
                 // This may break if locale is not English or similar!
                 DecimalFormat df = new DecimalFormat("#.##");
-                pokemon.setHeight(Double.valueOf(df.format(pokemon.getHeight()*0.328084)));
-                pokemon.setWeight(Double.valueOf(df.format(pokemon.getWeight()*0.220462)));
+                pokemon.setHeight(Double.valueOf(df.format(pokemon.getHeight() * 0.328084)));
+                pokemon.setWeight(Double.valueOf(df.format(pokemon.getWeight() * 0.220462)));
+                pokemon.setMoves(randomlySelectTwoMoves(pokemon.getMoves()));
 
                 User user = new User();
                 user.setUuid("" + ids.remove(0));
                 user.setName("" + names.remove(0));
                 user.setPokemon(pokemon);
-                databaseReference.child("users").child(user.getUuid()).setValue(user);
+                mUsersRef.child(user.getUuid()).setValue(user);
 
                 Log.d(TAG, "" + user.getName());
             }
         });
     }
- */
+
+    public ArrayList<Move> randomlySelectTwoMoves(ArrayList<Move> moves) {
+        Random random = new Random();
+        int one = random.nextInt(moves.size());
+        int two;
+        do {
+            two = random.nextInt(moves.size());
+        } while(one == two);
+        ArrayList<Move> twoMoves = new ArrayList<>(2);
+        twoMoves.add(moves.get(one));
+        twoMoves.add(moves.get(two));
+        return twoMoves;
+    }
+}
+
+
+
