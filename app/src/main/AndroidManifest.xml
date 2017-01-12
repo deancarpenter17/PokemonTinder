@@ -22,7 +22,9 @@
         <activity android:name=".CreateAccountActivity"/>
         <activity android:name=".MatchesActivity">
         </activity>
-        <activity android:name=".MessageActivity">
+        <activity android:name=".ConversationActivity">
+        </activity>
+        <activity android:name=".MessagesActivity">
         </activity>
     </application>
 
