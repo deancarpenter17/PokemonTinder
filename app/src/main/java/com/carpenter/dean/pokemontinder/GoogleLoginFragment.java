@@ -92,7 +92,7 @@ public class GoogleLoginFragment extends Fragment
                             Toast.LENGTH_SHORT).show();
                 } else {
                     // User is signed out
-                    Log.d("", "onAuthStateChanged:signed_out");
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
                 // ...
             }
@@ -160,7 +160,8 @@ public class GoogleLoginFragment extends Fragment
             GoogleSignInAccount acct = result.getSignInAccount();
             firebaseAuthWithGoogle(acct);
         } else {
-            // Signed out, show unauthenticated UI.
+            Log.e(TAG, "Could not sign in!");
+            Toast.makeText(getContext(), "Error logging in!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -179,6 +180,7 @@ public class GoogleLoginFragment extends Fragment
                         // signed in mFirebaseUser can be handled in the listener.
                         if(!task.isSuccessful()) {
                             Log.w("AUTH", "signInWithCredential", task.getException());
+                            Toast.makeText(getContext(), "Unable to log in!", Toast.LENGTH_SHORT).show();
 
                         }
                     }
