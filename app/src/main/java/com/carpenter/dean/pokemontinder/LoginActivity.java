@@ -40,9 +40,9 @@ public class LoginActivity extends AppCompatActivity
     private static final String TAG = "LoginActivity";
     private boolean pressedSignIn = false;
 
-    Button mCreateAccountButton;
-    SignInButton googleSignInButton;
-    ProgressDialog progressDialog;
+    private Button mCreateAccountButton;
+    private SignInButton googleSignInButton;
+    private ProgressDialog progressDialog;
 
     private User mUser;
     private Pokemon mPokemon;
