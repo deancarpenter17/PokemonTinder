@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "553429131105-n7i0g63n93ema4gnk0t06g4cu0uk5oiv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carpenter.dean.pokemontinder",
+            "certificate_hash": "1B0C2AD88BA42C77BEB78685638010EF0B5B624D"
+          }
+        },
+        {
           "client_id": "553429131105-j2f4308dn55vbj6hb4fp07u6hjs623io.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
