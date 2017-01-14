@@ -160,7 +160,9 @@ public class LoginActivity extends AppCompatActivity
             GoogleSignInAccount acct = result.getSignInAccount();
             firebaseAuthWithGoogle(acct);
         } else {
-            // Signed out, show unauthenticated UI.
+            Toast.makeText(getApplicationContext(), "Error signing in!", Toast.LENGTH_SHORT)
+                    .show();
+            if(progressDialog != null) progressDialog.dismiss();
         }
     }
 
