@@ -10,7 +10,7 @@ Due to copyright issues, this app is not available on the Google Play Store.
 3. Finally, press the "Find Matches" button to search for other Pokemon in the database! Swipe left or press the "X" button to dislike a Pokemon. Swipe right or press the "Heart" button to like a Pokemon. To view your matches & messages, press the menu icon in the top left corner. Enjoy!
 
 ## Preview
-TODO
+![PokemonTinder GIF](http://giphy.com/gifs/l0ExvOKSNLaA2qzDO)
 
 ## Contributing
 1. Fork it!
