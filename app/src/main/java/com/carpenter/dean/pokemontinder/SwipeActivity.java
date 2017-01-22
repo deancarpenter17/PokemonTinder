@@ -105,7 +105,7 @@ public class SwipeActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0: {
-                        startActivity(MessagesActivity.newIntent(getApplicationContext(), mUser));
+                        startActivity(MainActivity.newIntent(getApplicationContext(), mUser));
                         break;
                     }
                     case 1: {
@@ -113,6 +113,10 @@ public class SwipeActivity extends AppCompatActivity {
                         break;
                     }
                     case 2: {
+                        startActivity(MessagesActivity.newIntent(getApplicationContext(), mUser));
+                        break;
+                    }
+                    case 3: {
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                         break;
@@ -314,7 +318,7 @@ public class SwipeActivity extends AppCompatActivity {
     }
 
     private void addDrawerItems() {
-        String[] drawerOptions = {"Messages", "Matches", "Sign out"};
+        String[] drawerOptions = {"Main Menu", "Matches", "Messages", "Sign out"};
         mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
