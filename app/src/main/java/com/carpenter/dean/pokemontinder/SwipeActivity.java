@@ -98,7 +98,7 @@ public class SwipeActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_swipe);
         mActivityTitle = getTitle().toString();
-        mDrawerList = (ListView) findViewById(R.id.navListSwipe);
+        mDrawerList = (ListView) findViewById(R.id.navList_swipe_activity);
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
