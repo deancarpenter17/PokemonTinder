@@ -4,10 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,19 +26,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,20 +64,20 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = ProgressDialog.show(this, "Turning the wrenches..",
                 "Loading", true);
 
-        if(getIntent().getParcelableExtra(USER) != null) {
+        if (getIntent().getParcelableExtra(USER) != null) {
             mUser = getIntent().getParcelableExtra(USER);
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_main);
         mActivityTitle = getTitle().toString();
-        mDrawerList = (ListView) findViewById(R.id.navList);
+        mDrawerList = (ListView) findViewById(R.id.navList_main_activity);
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch(position) {
+                switch (position) {
                     case 0: {
                         startActivity(MessagesActivity.newIntent(getApplicationContext(), mUser));
                         break;
@@ -127,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         Log.d(TAG, "Firebase user null: " + mFirebaseUser);
-        if(mFirebaseUser == null) {
+        if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
             Log.d(TAG, "FIREBASE USER NOT SIGNED IN");
-            if(progressDialog != null) {
+            if (progressDialog != null) {
                 progressDialog.dismiss();
             }
             startActivity(new Intent(this, LoginActivity.class));
@@ -141,15 +128,15 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             mUser = dataSnapshot.getValue(User.class);
-                            if(mUser != null) {
-                                if(progressDialog != null) {
+                            if (mUser != null) {
+                                if (progressDialog != null) {
                                     progressDialog.dismiss();
                                 }
                                 mUserLoggedIn.setText("Welcome " + mUser.getName());
                                 Log.d(TAG, "User found: " + mUser.getName());
                             } else {
                                 Log.d(TAG, "FIREBASE USER NOT SIGNED IN");
-                                if(progressDialog != null) {
+                                if (progressDialog != null) {
                                     progressDialog.dismiss();
                                 }
                                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
@@ -159,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            if(progressDialog != null) {
+                            if (progressDialog != null) {
                                 progressDialog.dismiss();
                             }
                             Toast.makeText(getApplicationContext(), "Unable to authenticate user!",
@@ -200,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return false;
