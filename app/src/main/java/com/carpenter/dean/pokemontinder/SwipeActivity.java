@@ -223,13 +223,14 @@ public class SwipeActivity extends AppCompatActivity {
                             "Weight: " + user.getPokemon().getWeight());
                     mUsersHashMap.put(user.getUuid(), user);
                 }
+                // update current user's likes/dislikes/matches
                 mUser = mUsersHashMap.get(mUser.getUuid());
                 Log.d(TAG, "SIZE OF mUSERS before removal: " + mUsersHashMap.size());
                 // removes previous likes from users pool
                 if(mUser != null) {
                     Set<String> userLikes = mUser.getLikes().keySet();
                     Set<String> userDislikes = mUser.getDislikes().keySet();
-                    mUsersHashMap.keySet().removeAll(userLikes); // remove all previous likes from user pool
+                    mUsersHashMap.keySet().removeAll(userLikes);
                     mUsersHashMap.keySet().removeAll(userDislikes);
                     mUsersHashMap.keySet().remove(mUser.getUuid()); // remove yourself from user pool
                 }
@@ -249,7 +250,11 @@ public class SwipeActivity extends AppCompatActivity {
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flingContainer.getTopCardListener().selectLeft();
+                if(mUsersList.size() > 0) {
+                    flingContainer.getTopCardListener().selectLeft();
+                }
+                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                        .show();
             }
         });
 
@@ -257,7 +262,11 @@ public class SwipeActivity extends AppCompatActivity {
         heartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flingContainer.getTopCardListener().selectRight();
+                if(mUsersList.size() > 0) {
+                    flingContainer.getTopCardListener().selectRight();
+                }
+                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                        .show();
             }
         });
     }
