@@ -2,6 +2,9 @@ package com.carpenter.dean.pokemontinder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,9 +12,13 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -22,15 +29,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-/**
- * TO DO:
- * 1.) Set up messages section in dB
- * 2.) Retrive extra from intent on who the other user is
- * 3.) Create the dB reference for the user1_user2 id under messages section in dB. (user1_user2
- *                      is ordered by natural order for uniformity)
- * 4.) Retrieve those messages with RecyclerView
- */
 
 public class ConversationActivity extends AppCompatActivity {
 
@@ -58,6 +56,12 @@ public class ConversationActivity extends AppCompatActivity {
 
     private EditText mMessageEditText;
     private Button mSendButton;
+
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mDrawerAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private String mActivityTitle;
 
     public static Intent newIntent(Context context, User currentUser, User otherUser) {
         Intent intent = new Intent(context, ConversationActivity.class);
@@ -163,6 +167,38 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_conversation);
+        mActivityTitle = getTitle().toString();
+        mDrawerList = (ListView) findViewById(R.id.navList_activity_conversation);
+        addDrawerItems();
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0: {
+                        startActivity(MainActivity.newIntent(getApplicationContext(), currentUser));
+                        break;
+                    }
+                    case 1: {
+                        startActivity(MatchesActivity.newIntent(getApplicationContext(), currentUser));
+                        break;
+                    }
+                    case 2: {
+                        startActivity(MessagesActivity.newIntent(getApplicationContext(), currentUser));
+                        break;
+                    }
+                    case 3: {
+                        FirebaseAuth.getInstance().signOut();
+                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                        break;
+                    }
+                }
+            }
+        });
+        setupDrawer();
+
     }
 
     public static class MessageHolder extends RecyclerView.ViewHolder {
@@ -178,5 +214,51 @@ public class ConversationActivity extends AppCompatActivity {
         }
     }
 
+    private void addDrawerItems() {
+        String[] drawerOptions = {"Main Menu", "Matches", "Messages", "Sign out"};
+        mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
+        mDrawerList.setAdapter(mDrawerAdapter);
+    }
 
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("Options");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
 }
