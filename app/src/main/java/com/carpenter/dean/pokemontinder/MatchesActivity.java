@@ -94,11 +94,11 @@ public class MatchesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
                     case 0: {
-                        startActivity(MessagesActivity.newIntent(getApplicationContext(), currentUser));
+                        startActivity(MainActivity.newIntent(getApplicationContext(), currentUser));
                         break;
                     }
                     case 1: {
-                        startActivity(MatchesActivity.newIntent(getApplicationContext(), currentUser));
+                        startActivity(MessagesActivity.newIntent(getApplicationContext(), currentUser));
                         break;
                     }
                     case 2: {
@@ -136,7 +136,7 @@ public class MatchesActivity extends AppCompatActivity {
     }
 
     private void addDrawerItems() {
-        String[] drawerOptions = {"Messages", "Matches", "Sign out"};
+        String[] drawerOptions = {"Main Menu", "Messages", "Sign out"};
         mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
         mDrawerList.setAdapter(mDrawerAdapter);
     }
