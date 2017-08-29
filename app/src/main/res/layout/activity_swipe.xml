@@ -10,7 +10,7 @@
 
     >
 
-    <LinearLayout
+    <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -21,21 +21,14 @@
         tools:context="com.carpenter.dean.pokemontinder.SwipeActivity"
         >
 
-        <com.lorentzos.flingswipe.SwipeFlingAdapterView
-            android:id="@+id/SwipeFlingContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="4"
-            />
-
         <LinearLayout
             android:id="@+id/linear_layout_buttons"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="90dp"
             android:layout_marginBottom="40dp"
             android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="bottom|center"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <android.support.design.widget.FloatingActionButton
@@ -64,7 +57,14 @@
                 />
         </LinearLayout>
 
-    </LinearLayout>
+
+        <com.lorentzos.flingswipe.SwipeFlingAdapterView
+            android:id="@+id/SwipeFlingContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+    </FrameLayout>
 
     <ListView
         android:id="@+id/navList_swipe_activity"
