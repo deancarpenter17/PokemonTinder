@@ -36,7 +36,7 @@
         android:layout_below="@id/choose_pokemon_text_view"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:hint="@string/pokemon_choice_hint"
         android:imeOptions="actionDone"
         android:inputType="text"
@@ -45,17 +45,18 @@
 
     <Button
         android:id="@+id/find_pokemon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="75dp"
+        android:layout_height="30dp"
         android:layout_below="@id/choose_pokemon_text_view"
         android:layout_marginTop="20dp"
         android:layout_toEndOf="@id/choose_pokemon_edit_text"
-        android:text="@string/search"/>
+        android:text="@string/search"
+        android:textSize="12sp"/>
 
     <Button
         android:id="@+id/account_activity_create_account_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
         android:text="@string/create_account"
         android:layout_marginBottom="24dp"
         android:layout_alignParentBottom="true"
@@ -88,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
+                android:layout_above="@+id/pokemon_chooser_pokemon_types"
                 android:textAllCaps="true"
                 android:textColor="@color/pokemon_blue"
                 android:textSize="25sp"
@@ -98,8 +99,8 @@
                 android:id="@+id/pokemon_chooser_pokemon_types"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/pokemon_chooser_pokemon_name"
                 android:layout_centerHorizontal="true"
+                android:layout_above="@+id/pokemon_chooser_pokemon_picture"
                 android:layout_marginTop="5dp"
                 android:textAllCaps="true"
                 android:textSize="12sp"
@@ -110,8 +111,7 @@
                 android:id="@+id/pokemon_chooser_pokemon_picture"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
-                android:layout_below="@id/pokemon_chooser_pokemon_types"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 />
 
             <TextView
@@ -119,9 +119,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="110dp"
                 android:layout_toStartOf="@id/pokemon_chooser_pokemon_picture"
+                android:layout_marginEnd="10dp"
+                android:layout_centerVertical="true"
                 android:textSize="12sp"
                 android:textColor="@color/pokemon_blue"
 
@@ -132,8 +132,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="110dp"
+                android:layout_marginStart="10dp"
+                android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/pokemon_chooser_pokemon_picture"
                 android:textSize="12sp"
                 android:textColor="@color/pokemon_blue"
