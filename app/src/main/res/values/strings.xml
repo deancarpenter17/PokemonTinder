@@ -5,8 +5,7 @@
     <string name="dialog_cancel_account_creation">cancel</string>
     <string name="google_sign_in_required">First, a Google login is required</string>
     <string name="choose_your_pokemon">Choose a Pokemon to represent you. Search by Pokemon name
-        or Pokedex ID (Range: [1-721]) Each Pokemon\'s moves are randomly assigned from what they\'re
-        able to learn.</string>
+        or Pokedex ID (Range: [1-721]) </string>
     <string name="pokemon_choice_hint">Name or ID:</string>
     <string name="find_pokemon">Search</string>
     <string name="create_account_title_text_view">Choose Pokemon</string>
