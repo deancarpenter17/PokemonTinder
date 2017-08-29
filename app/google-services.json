@@ -15,11 +15,35 @@
       },
       "oauth_client": [
         {
+          "client_id": "553429131105-9sf4jflq0ttoh2q0b4k6hu59cibla7qj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carpenter.dean.pokemontinder",
+            "certificate_hash": "176cf950304aa5b737782324e4d58f5a8b93fb8f"
+          }
+        },
+        {
+          "client_id": "553429131105-9ei14k82q1e6rjubuanqiiv1c1odacsl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carpenter.dean.pokemontinder",
+            "certificate_hash": "705113ec9a848ac895424e4ff5a9e2b36bb2b6bb"
+          }
+        },
+        {
+          "client_id": "553429131105-fpk3pc4pvecfhok8inm7pv2l1jqmkpv0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carpenter.dean.pokemontinder",
+            "certificate_hash": "9026cc8e2dc15a656c9af44fe75e7b457d9d2b1e"
+          }
+        },
+        {
           "client_id": "553429131105-n7i0g63n93ema4gnk0t06g4cu0uk5oiv.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.carpenter.dean.pokemontinder",
-            "certificate_hash": "1B0C2AD88BA42C77BEB78685638010EF0B5B624D"
+            "certificate_hash": "1b0c2ad88ba42c77beb78685638010ef0b5b624d"
           }
         },
         {
@@ -27,7 +51,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.carpenter.dean.pokemontinder",
-            "certificate_hash": "2B7385DD59DE2077F57D4796D145F8C5D393A44E"
+            "certificate_hash": "2b7385dd59de2077f57d4796d145f8c5d393a44e"
           }
         },
         {
