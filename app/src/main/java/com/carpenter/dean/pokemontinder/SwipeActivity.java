@@ -102,7 +102,7 @@ public class SwipeActivity extends AppCompatActivity {
         drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch(position) {
+                switch (position) {
                     case 0: {
                         startActivity(MainActivity.newIntent(getApplicationContext(), user));
                         break;
@@ -132,9 +132,8 @@ public class SwipeActivity extends AppCompatActivity {
 
             @Override
             public void removeFirstObjectInAdapter() {
-                // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                if(usersList.size() > 0) {
+                if (usersList.size() > 0) {
                     usersList.remove(0);
                     userAdapter.notifyDataSetChanged();
                 } else
@@ -142,12 +141,9 @@ public class SwipeActivity extends AppCompatActivity {
                             .show();
             }
 
+            // Add user to dislikes list in firebase
             @Override
             public void onLeftCardExit(Object dataObject) {
-                //Do something on the left!
-                //You also have access to the original object.
-                //If you want to use it just cast it (String) dataObject
-
                 User user = (User) dataObject;
                 Map<String, Object> childUpdates = new HashMap<>();
                 User tempUser = new User(user.getUuid(), user.getName());
@@ -168,7 +164,7 @@ public class SwipeActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Match? :" + user.getLikes().keySet().contains(SwipeActivity.this.user.getUuid()));
 
-                if(user.getLikes().keySet().contains(SwipeActivity.this.user.getUuid())) {
+                if (user.getLikes().keySet().contains(SwipeActivity.this.user.getUuid())) {
                     Toast.makeText(getApplicationContext(), "Its a match!",
                             Toast.LENGTH_LONG).show();
                     // updating matches for current user
@@ -216,7 +212,7 @@ public class SwipeActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // need to remove likes & matches when adding new users
                 HashMap<String, User> mUsersHashMap = new HashMap<>();
-                for(DataSnapshot child : dataSnapshot.getChildren()) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
                     User user = child.getValue(User.class);
                     Log.d(TAG, "USER ADDED: " + user.getUuid() + "Pokemon: " + user.getPokemon().getName() +
                             "Weight: " + user.getPokemon().getWeight());
@@ -226,7 +222,7 @@ public class SwipeActivity extends AppCompatActivity {
                 user = mUsersHashMap.get(user.getUuid());
                 Log.d(TAG, "SIZE OF mUSERS before removal: " + mUsersHashMap.size());
                 // removes previous likes from users pool
-                if(user != null) {
+                if (user != null) {
                     Set<String> userLikes = user.getLikes().keySet();
                     Set<String> userDislikes = user.getDislikes().keySet();
                     mUsersHashMap.keySet().removeAll(userLikes);
@@ -249,11 +245,11 @@ public class SwipeActivity extends AppCompatActivity {
         xButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(usersList.size() > 0) {
+                if (usersList.size() > 0) {
                     flingContainer.getTopCardListener().selectLeft();
-                }
-                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
-                        .show();
+                } else
+                    Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                            .show();
             }
         });
 
@@ -261,11 +257,11 @@ public class SwipeActivity extends AppCompatActivity {
         heartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(usersList.size() > 0) {
+                if (usersList.size() > 0) {
                     flingContainer.getTopCardListener().selectRight();
-                }
-                else Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
-                        .show();
+                } else
+                    Toast.makeText(getApplicationContext(), "No more users in dB :(", Toast.LENGTH_LONG)
+                            .show();
             }
         });
     }
@@ -280,10 +276,10 @@ public class SwipeActivity extends AppCompatActivity {
             // Get the data item for this position
             // Check if an existing view is being reused, otherwise inflate the view
 
-            if(v == null) {
+            if (v == null) {
                 v = LayoutInflater.from(getContext()).inflate(R.layout.list_pokemon_view, parent, false);
             }
-            if(usersList.size() > 0) {
+            if (usersList.size() > 0) {
                 Pokemon currentPokemon = usersList.get(position).getPokemon();
                 TextView pokemonName = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_name);
                 pokemonName.setText(currentPokemon.getName());
@@ -292,10 +288,10 @@ public class SwipeActivity extends AppCompatActivity {
                 Picasso.with(getContext()).load(currentPokemon.getSprites().getFrontDefault()).into(pokemonPicture);
 
                 TextView pokemonTypes = (TextView) v.findViewById(R.id.list_pokemon_view_pokemon_types);
-                if(currentPokemon.getTypes().size() == 1) {
+                if (currentPokemon.getTypes().size() == 1) {
                     pokemonTypes.setText(currentPokemon.getTypes().get(0).getType().getName() +
                             " type");
-                } else if(currentPokemon.getTypes().size() == 2) {
+                } else if (currentPokemon.getTypes().size() == 2) {
                     pokemonTypes.setText(currentPokemon.getTypes().get(0).getType().getName()
                             + " and " +
                             currentPokemon.getTypes().get(1).getType().getName() +
@@ -355,7 +351,7 @@ public class SwipeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(drawerToggle.onOptionsItemSelected(item)) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return false;
@@ -407,7 +403,7 @@ public class SwipeActivity extends AppCompatActivity {
         names.add("ygritte");
 
         final ArrayList<Integer> ids = new ArrayList<>();
-        for(int i = 0; i < 25; i++) {
+        for (int i = 0; i < 25; i++) {
             int randomNum = 1 + (int) (Math.random() * ((721 - 1) + 1));
             ids.add(0, randomNum);
         }
@@ -447,7 +443,7 @@ public class SwipeActivity extends AppCompatActivity {
         int two;
         do {
             two = random.nextInt(moves.size());
-        } while(one == two);
+        } while (one == two);
         ArrayList<Move> twoMoves = new ArrayList<>(2);
         twoMoves.add(moves.get(one));
         twoMoves.add(moves.get(two));
