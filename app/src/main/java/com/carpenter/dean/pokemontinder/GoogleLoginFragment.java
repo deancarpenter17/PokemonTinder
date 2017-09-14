@@ -31,13 +31,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Callbacks} interface
- * to handle interaction events.
- */
 public class GoogleLoginFragment extends Fragment
         implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -45,21 +38,21 @@ public class GoogleLoginFragment extends Fragment
     private final static String USER = "user";
     private final static String TAG = "GoogleLoginFragment";
 
-    private Pokemon mPokemon;
+    private Pokemon pokemon;
 
-    private User mUser;
+    private User user;
 
-    private SignInButton mSignInButton;
-    private Button mNextButton;
+    private SignInButton signInButton;
+    private Button nextButton;
     private ProgressDialog progressDialog;
 
-    private DatabaseReference mDatabase;
-    private GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mFirebaseUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference dataBase;
+    private GoogleApiClient googleApiClient;
+    private FirebaseAuth auth;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
-    private Callbacks mCallbacks;
+    private Callbacks callbacks;
 
     public static Fragment newInstance() {
         return new GoogleLoginFragment();
@@ -71,24 +64,24 @@ public class GoogleLoginFragment extends Fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_google_login, container, false);
 
-        mUser = new User();
+        user = new User();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        dataBase = FirebaseDatabase.getInstance().getReference();
 
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mFirebaseUser = firebaseAuth.getCurrentUser();
-                if(mFirebaseUser != null) {
-                    mUser.setUuid(mFirebaseUser.getUid());
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if(firebaseUser != null) {
+                    user.setUuid(firebaseUser.getUid());
                     // only want to store first name in database
-                    int i = mFirebaseUser.getDisplayName().indexOf(' ');
-                    String name = mFirebaseUser.getDisplayName().substring(0, i);
-                    mUser.setName(name);
-                    Log.d("onAuthStateChanged", "signed_in:" + mFirebaseUser.getUid());
-                    Toast.makeText(getContext(), mFirebaseUser.getDisplayName() + " signed in!",
+                    int i = firebaseUser.getDisplayName().indexOf(' ');
+                    String name = firebaseUser.getDisplayName().substring(0, i);
+                    user.setName(name);
+                    Log.d("onAuthStateChanged", "signed_in:" + firebaseUser.getUid());
+                    Toast.makeText(getContext(), firebaseUser.getDisplayName() + " signed in!",
                             Toast.LENGTH_SHORT).show();
                 } else {
                     // User is signed out
@@ -102,30 +95,30 @@ public class GoogleLoginFragment extends Fragment
                 .requestIdToken(getString(R.string.web_client_id))
                 .requestEmail()
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+        googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        mSignInButton = (SignInButton) v.findViewById(R.id.create_account_sign_in_button);
-        mSignInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton = (SignInButton) v.findViewById(R.id.create_account_sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
         v.findViewById(R.id.create_account_sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mGoogleApiClient.clearDefaultAccountAndReconnect();
+                googleApiClient.clearDefaultAccountAndReconnect();
                 signIn();
             }
         });
 
-        mNextButton = (Button) v.findViewById(R.id.login_fragment_next_button);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        nextButton = (Button) v.findViewById(R.id.login_fragment_next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mFirebaseUser == null) {
+                if(firebaseUser == null) {
                     Toast.makeText(getContext(), "MUST SIGN IN WITH GOOGLE!", Toast.LENGTH_LONG).show();
                 }
-                else if(mUser != null) {
-                    mCallbacks.switchToPokemonChooserFrag(mUser);
+                else if(user != null) {
+                    callbacks.switchToPokemonChooserFrag(user);
                 }
                 else {
                     Toast.makeText(getContext(), "Error logging in!", Toast.LENGTH_LONG).show();
@@ -138,7 +131,7 @@ public class GoogleLoginFragment extends Fragment
 
 
     private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
@@ -169,15 +162,15 @@ public class GoogleLoginFragment extends Fragment
         Log.d("AUTH", "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        auth.signInWithCredential(credential)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("AUTH", "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the mFirebaseUser. If sign in succeeds
+                        // If sign in fails, display a message to the firebaseUser. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
-                        // signed in mFirebaseUser can be handled in the listener.
+                        // signed in firebaseUser can be handled in the listener.
                         if(!task.isSuccessful()) {
                             Log.w("AUTH", "signInWithCredential", task.getException());
                             Toast.makeText(getContext(), "Unable to log in!", Toast.LENGTH_SHORT).show();
@@ -195,14 +188,14 @@ public class GoogleLoginFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        auth.addAuthStateListener(authStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+        if(authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener);
         }
     }
 
@@ -210,7 +203,7 @@ public class GoogleLoginFragment extends Fragment
     public void onAttach(Context context) {
         super.onAttach(context);
         if(context instanceof Callbacks) {
-            mCallbacks = (Callbacks) context;
+            callbacks = (Callbacks) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement Callbacks");
@@ -220,19 +213,9 @@ public class GoogleLoginFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        mCallbacks = null;
+        callbacks = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface Callbacks {
         // TODO: Update argument type and name
         public void switchToPokemonChooserFrag(User user);

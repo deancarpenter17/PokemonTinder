@@ -27,8 +27,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -51,27 +49,27 @@ public class PokemonChooserFragment extends Fragment {
     private final static int RC_SIGN_IN = 0;
     private final static String USER = "user";
 
-    private Pokemon mPokemon;
+    private Pokemon pokemon;
     private boolean picLoaded = false;
-    private User mUser;
+    private User user;
 
-    private TextView mPokemonNameTextView;
-    private TextView mPokemonTypesTextView;
-    private TextView mPokemonHeightTextView;
-    private TextView mPokemonWeightTextView;
-    private TextView mPokemonMoveOneTextView;
-    private TextView mPokemonMoveTwoTextView;
-    private TextView mUsersNameTextView;
-    private EditText mPokemonEditText;
-    private ImageView mPokemonImage;
-    private Button mFindPokemon;
-    private Button mCreateAccount;
+    private TextView pokemonNameTextView;
+    private TextView pokemonTypesTextView;
+    private TextView pokemonHeightTextView;
+    private TextView pokemonWeightTextView;
+    private TextView pokemonMoveOneTextView;
+    private TextView pokemonMoveTwoTextView;
+    private TextView usersNameTextView;
+    private EditText pokemonEditText;
+    private ImageView pokemonImage;
+    private Button findPokemon;
+    private Button createAccount;
     private ProgressDialog progressDialog;
 
-    private DatabaseReference mDatabase;
-    private FirebaseUser mFirebaseUser;
+    private DatabaseReference databaseReference;
+    private FirebaseUser firebaseUser;
 
-    private Callbacks mListener;
+    private Callbacks callbacks;
 
     public static PokemonChooserFragment newInstance(User user) {
         PokemonChooserFragment fragment = new PokemonChooserFragment();
@@ -87,56 +85,56 @@ public class PokemonChooserFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_pokemon_chooser, container, false);
 
-        mUser = getArguments().getParcelable(USER);
-        if(mUser != null) {
-            Log.d(TAG, "USER: " + mUser.getName());
+        user = getArguments().getParcelable(USER);
+        if(user != null) {
+            Log.d(TAG, "USER: " + user.getName());
         }
         else {
             Log.e(TAG, "UNABLE TO RETRIEVE CURRENT USER!");
         }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
-        mPokemonEditText = (EditText) v.findViewById(R.id.choose_pokemon_edit_text);
-        mPokemonEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        pokemonEditText = (EditText) v.findViewById(R.id.choose_pokemon_edit_text);
+        pokemonEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(hasFocus) {
-                    mPokemonEditText.setHint(R.string.pokemon_choice_hint);
+                    pokemonEditText.setHint(R.string.pokemon_choice_hint);
                 }
                 else {
-                    hideKeyboardFrom(getContext(), mPokemonEditText);
+                    hideKeyboardFrom(getContext(), pokemonEditText);
                 }
             }
         });
-        mPokemonEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        pokemonEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if(i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_SEND) {
-                    hideKeyboardFrom(getContext(), mPokemonEditText);
-                    mFindPokemon.performClick();
+                    hideKeyboardFrom(getContext(), pokemonEditText);
+                    findPokemon.performClick();
                     return true;
                 }
                 return false;
             }
         });
-        mPokemonNameTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_name);
-        mPokemonTypesTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_types);
-        mPokemonHeightTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_height);
-        mPokemonWeightTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_weight);
-        mPokemonMoveOneTextView = (TextView) v.findViewById(R.id.pokemon_chooser_move_one);
-        mPokemonMoveTwoTextView = (TextView) v.findViewById(R.id.pokemon_chooser_move_two);
-        mUsersNameTextView = (TextView) v.findViewById(R.id.pokemon_chooser_users_name);
-        mPokemonImage = (ImageView) v.findViewById(R.id.pokemon_chooser_pokemon_picture);
-        mFindPokemon = (Button) v.findViewById(R.id.find_pokemon);
-        mFindPokemon.setOnClickListener(new View.OnClickListener() {
+        pokemonNameTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_name);
+        pokemonTypesTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_types);
+        pokemonHeightTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_height);
+        pokemonWeightTextView = (TextView) v.findViewById(R.id.pokemon_chooser_pokemon_weight);
+        pokemonMoveOneTextView = (TextView) v.findViewById(R.id.pokemon_chooser_move_one);
+        pokemonMoveTwoTextView = (TextView) v.findViewById(R.id.pokemon_chooser_move_two);
+        usersNameTextView = (TextView) v.findViewById(R.id.pokemon_chooser_users_name);
+        pokemonImage = (ImageView) v.findViewById(R.id.pokemon_chooser_pokemon_picture);
+        findPokemon = (Button) v.findViewById(R.id.find_pokemon);
+        findPokemon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideKeyboardFrom(getContext(), mPokemonEditText);
+                hideKeyboardFrom(getContext(), pokemonEditText);
                 progressDialog = ProgressDialog.show(getContext(), "Turning the wrenches..",
                         "Loading", true);
 
-                new PokemonDownloader().getPokemon(mPokemonEditText.getText().toString().toLowerCase()
+                new PokemonDownloader().getPokemon(pokemonEditText.getText().toString().toLowerCase()
                         , new Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
@@ -160,60 +158,60 @@ public class PokemonChooserFragment extends Fragment {
 
                                     if(response.isSuccessful()) {
 
-                                        mPokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
-                                        Log.d("POKEMON CREATED: ", mPokemon.getName() +
-                                                ", Pic URL: " + mPokemon.getSprites().getFrontDefault() +
-                                                ", Height: " + mPokemon.getHeight() +
-                                                ", Weight: " + mPokemon.getWeight() +
-                                                ", Number of types: " + mPokemon.getTypes().size() +
-                                                ", Number of moves: " + mPokemon.getMoves().size()
+                                        pokemon = gson.fromJson(response.body().charStream(), Pokemon.class);
+                                        Log.d("POKEMON CREATED: ", pokemon.getName() +
+                                                ", Pic URL: " + pokemon.getSprites().getFrontDefault() +
+                                                ", Height: " + pokemon.getHeight() +
+                                                ", Weight: " + pokemon.getWeight() +
+                                                ", Number of types: " + pokemon.getTypes().size() +
+                                                ", Number of moves: " + pokemon.getMoves().size()
                                         );
                                         // randomly select 2 moves from all possible moves the dB retrieved for that pokemon
                                         // see method below for more details
-                                        mPokemon.setMoves(randomlySelectTwoMoves(mPokemon.getMoves()));
+                                        pokemon.setMoves(randomlySelectTwoMoves(pokemon.getMoves()));
 
-                                        final String picUrl = mPokemon.getSprites().getFrontDefault();
+                                        final String picUrl = pokemon.getSprites().getFrontDefault();
                                         if(picUrl != null) {
                                             getActivity().runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    Picasso.with(getContext()).load(picUrl).into(mPokemonImage);
+                                                    Picasso.with(getContext()).load(picUrl).into(pokemonImage);
                                                     picLoaded = true;
-                                                    mPokemonNameTextView.setText(mPokemon.getName());
-                                                    if(mPokemon.getTypes().size() == 1) {
-                                                        mPokemonTypesTextView.setText(mPokemon.getTypes().get(0).getType().getName() +
+                                                    pokemonNameTextView.setText(pokemon.getName());
+                                                    if(pokemon.getTypes().size() == 1) {
+                                                        pokemonTypesTextView.setText(pokemon.getTypes().get(0).getType().getName() +
                                                                 " type");
-                                                    } else if(mPokemon.getTypes().size() == 2) {
-                                                        mPokemonTypesTextView.setText(mPokemon.getTypes().get(0).getType().getName()
+                                                    } else if(pokemon.getTypes().size() == 2) {
+                                                        pokemonTypesTextView.setText(pokemon.getTypes().get(0).getType().getName()
                                                                 + " and " +
-                                                                mPokemon.getTypes().get(1).getType().getName() +
+                                                                pokemon.getTypes().get(1).getType().getName() +
                                                                 " type");
                                                     }
                                                     // Database contains heights in decimeters , and weight in hectograms
                                                     // Converting to United States customary units
                                                     // This may break if locale is not English or similar!
                                                     DecimalFormat df = new DecimalFormat("#.##");
-                                                    mPokemon.setHeight(Double.valueOf(df.format(mPokemon.getHeight()*0.328084)));
-                                                    mPokemon.setWeight(Double.valueOf(df.format(mPokemon.getWeight()*0.220462)));
-                                                    mPokemonHeightTextView.setText("Height:\n" + mPokemon.getHeight() + " ft");
-                                                    mPokemonWeightTextView.setText("Weight:\n" + mPokemon.getWeight() + " lbs");
+                                                    pokemon.setHeight(Double.valueOf(df.format(pokemon.getHeight()*0.328084)));
+                                                    pokemon.setWeight(Double.valueOf(df.format(pokemon.getWeight()*0.220462)));
+                                                    pokemonHeightTextView.setText("Height:\n" + pokemon.getHeight() + " ft");
+                                                    pokemonWeightTextView.setText("Weight:\n" + pokemon.getWeight() + " lbs");
 
-                                                    mPokemonMoveOneTextView.setText("First move: " + mPokemon.getMoves().get(0).getMove().getName());
-                                                    mPokemonMoveTwoTextView.setText(("Second move: " + mPokemon.getMoves().get(1).getMove().getName()));
+                                                    pokemonMoveOneTextView.setText("First move: " + pokemon.getMoves().get(0).getMove().getName());
+                                                    pokemonMoveTwoTextView.setText(("Second move: " + pokemon.getMoves().get(1).getMove().getName()));
 
-                                                    mUsersNameTextView.setText("User: " + mUser.getName());
+                                                    usersNameTextView.setText("User: " + user.getName());
 
                                                 }
                                             });
                                         }
-                                        mUser.setPokemon(mPokemon);
+                                        user.setPokemon(pokemon);
                                     }
 
                                     if(!response.isSuccessful()) {
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
-                                                if(android.text.TextUtils.isDigitsOnly(mPokemonEditText.getText().toString())) {
+                                                if(android.text.TextUtils.isDigitsOnly(pokemonEditText.getText().toString())) {
                                                     Toast.makeText(getContext(),
                                                             "Couldn't find Pokemon. Pokedex range is [1-721]",
                                                             Toast.LENGTH_LONG).show();
@@ -237,19 +235,19 @@ public class PokemonChooserFragment extends Fragment {
             }
         });
 
-        mCreateAccount = (Button) v.findViewById(R.id.account_activity_create_account_button);
-        mCreateAccount.setOnClickListener(new View.OnClickListener() {
+        createAccount = (Button) v.findViewById(R.id.account_activity_create_account_button);
+        createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mUser == null) {
+                if(user == null) {
                     Toast.makeText(getContext(), "Must sign in with Google",
                             Toast.LENGTH_LONG).show();
-                } else if(mUser.getPokemon() == null) {
+                } else if(user.getPokemon() == null) {
                     Toast.makeText(getContext(), "Must choose a Pokemon!",
                             Toast.LENGTH_LONG).show();
-                } else if(mUser.getName() != null && mUser.getUuid() != null) {
-                    mDatabase.child("users").child(mUser.getUuid()).setValue(mUser);
-                    Intent intent = MainActivity.newIntent(getContext(), mUser);
+                } else if(user.getName() != null && user.getUuid() != null) {
+                    databaseReference.child("users").child(user.getUuid()).setValue(user);
+                    Intent intent = MainActivity.newIntent(getContext(), user);
                     getActivity().startActivity(intent);
                 }
             }
@@ -285,7 +283,7 @@ public class PokemonChooserFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if(context instanceof Callbacks) {
-            mListener = (Callbacks) context;
+            callbacks = (Callbacks) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement Callbacks");
@@ -295,7 +293,7 @@ public class PokemonChooserFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        callbacks = null;
     }
 
     /**

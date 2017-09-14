@@ -31,8 +31,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 public class LoginActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -40,17 +38,17 @@ public class LoginActivity extends AppCompatActivity
     private static final String TAG = "LoginActivity";
     private boolean pressedSignIn = false;
 
-    private Button mCreateAccountButton;
+    private Button createAccountButton;
     private SignInButton googleSignInButton;
     private ProgressDialog progressDialog;
 
-    private User mUser;
-    private Pokemon mPokemon;
+    private User user;
+    private Pokemon pokemon;
 
-    private GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
-    private FirebaseUser mFirebaseUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private GoogleApiClient googleApiClient;
+    private FirebaseAuth auth;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
 
     /**/
@@ -61,16 +59,16 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mFirebaseUser = firebaseAuth.getCurrentUser();
+                firebaseUser = firebaseAuth.getCurrentUser();
                 if(progressDialog != null)
                     progressDialog.dismiss();
-                if(mFirebaseUser != null) {
-                    databaseReference.child("users").child(mFirebaseUser.getUid()).addListenerForSingleValueEvent(
+                if(firebaseUser != null) {
+                    databaseReference.child("users").child(firebaseUser.getUid()).addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -84,7 +82,7 @@ public class LoginActivity extends AppCompatActivity
                                     if(user != null) {
                                         Log.d(TAG, "" + user.getName() + ": " + user.getPokemon().getName());
                                         Intent intent = MainActivity.newIntent(getApplicationContext(),
-                                                mUser);
+                                                LoginActivity.this.user);
                                         startActivity(intent);
 
                                     }
@@ -96,7 +94,7 @@ public class LoginActivity extends AppCompatActivity
                                 }
                             }
                     );
-                    Log.d("onAuthStateChanged", "signed_in:" + mFirebaseUser.getUid());
+                    Log.d("onAuthStateChanged", "signed_in:" + firebaseUser.getUid());
                 } else {
                     // User is signed out
                     Log.d("", "onAuthStateChanged:signed_out");
@@ -109,7 +107,8 @@ public class LoginActivity extends AppCompatActivity
                 .requestIdToken(getString(R.string.web_client_id))
                 .requestEmail()
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+
+        googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
@@ -117,7 +116,7 @@ public class LoginActivity extends AppCompatActivity
 
         googleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
         googleSignInButton.setSize(SignInButton.SIZE_STANDARD);
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Turning the wrenches...",
@@ -127,8 +126,8 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        mCreateAccountButton = (Button) findViewById(R.id.create_account_button);
-        mCreateAccountButton.setOnClickListener(new View.OnClickListener() {
+        createAccountButton = (Button) findViewById(R.id.create_account_button);
+        createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getApplicationContext(), CreateAccountActivity.class));
@@ -137,8 +136,8 @@ public class LoginActivity extends AppCompatActivity
     }
 
     private void signIn() {
-        mGoogleApiClient.clearDefaultAccountAndReconnect();
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        googleApiClient.clearDefaultAccountAndReconnect();
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
@@ -170,15 +169,15 @@ public class LoginActivity extends AppCompatActivity
         Log.d("AUTH", "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d("AUTH", "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the mFirebaseUser. If sign in succeeds
+                        // If sign in fails, display a message to the firebaseUser. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
-                        // signed in mFirebaseUser can be handled in the listener.
+                        // signed in firebaseUser can be handled in the listener.
                         if(!task.isSuccessful()) {
                             Log.w("AUTH", "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
@@ -192,14 +191,14 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        auth.addAuthStateListener(authStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+        if(authStateListener != null) {
+            auth.removeAuthStateListener(authStateListener);
         }
     }
 

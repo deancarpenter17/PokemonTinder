@@ -30,19 +30,19 @@ public class MatchesActivity extends AppCompatActivity {
     private static final String TAG = "MatchesActivity";
     private static final String USER = "user";
 
-    private RecyclerView mRecyclerView;
-    private FirebaseRecyclerAdapter<User, UserViewHolder> mAdapter;
-    private FirebaseUser mUser;
-    private DatabaseReference mDatabaseRef;
+    private RecyclerView recyclerView;
+    private FirebaseRecyclerAdapter<User, UserViewHolder> adapter;
+    private FirebaseUser user;
+    private DatabaseReference databaseReference;
     private DatabaseReference matchesRef;
 
     private static User currentUser;
 
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mDrawerAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
+    private ListView drawerList;
+    private ArrayAdapter<String> drawerAdapter;
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+    private String activityTitle;
 
     public static Intent newIntent(Context context, User currentUser) {
         Intent intent = new Intent(context, MatchesActivity.class);
@@ -56,15 +56,15 @@ public class MatchesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_matches);
 
         currentUser = getIntent().getParcelableExtra(USER);
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mRecyclerView = (RecyclerView) findViewById(R.id.matches_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        recyclerView = (RecyclerView) findViewById(R.id.matches_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        if(mUser != null) {
-            mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-            matchesRef = mDatabaseRef.child("users").child(mUser.getUid()).child("matches");
-            mAdapter = new FirebaseRecyclerAdapter<User, UserViewHolder>(
+        if(user != null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference();
+            matchesRef = databaseReference.child("users").child(user.getUid()).child("matches");
+            adapter = new FirebaseRecyclerAdapter<User, UserViewHolder>(
                     User.class,
                     R.layout.matches_item,
                     UserViewHolder.class,
@@ -80,16 +80,16 @@ public class MatchesActivity extends AppCompatActivity {
                     Log.d(TAG, "User in Viewholder: "+model.getName());
                 }
             };
-            mRecyclerView.setAdapter(mAdapter);
+            recyclerView.setAdapter(adapter);
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_matches);
-        mActivityTitle = getTitle().toString();
-        mDrawerList = (ListView) findViewById(R.id.navList_matches_activity);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_matches);
+        activityTitle = getTitle().toString();
+        drawerList = (ListView) findViewById(R.id.navList_matches_activity);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
@@ -137,12 +137,12 @@ public class MatchesActivity extends AppCompatActivity {
 
     private void addDrawerItems() {
         String[] drawerOptions = {"Main Menu", "Messages", "Sign out"};
-        mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
-        mDrawerList.setAdapter(mDrawerAdapter);
+        drawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
+        drawerList.setAdapter(drawerAdapter);
     }
 
     private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely open state. */
@@ -155,17 +155,17 @@ public class MatchesActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
+                getSupportActionBar().setTitle(activityTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.setDrawerListener(drawerToggle);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if(drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return false;
@@ -174,12 +174,12 @@ public class MatchesActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 }

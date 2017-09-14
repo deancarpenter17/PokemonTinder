@@ -46,22 +46,22 @@ public class ConversationActivity extends AppCompatActivity {
     private User otherUser;
     private FirebaseUser firebaseUser;
 
-    private DatabaseReference mDatabaseRef;
-    private DatabaseReference mMessageRef;
-    private DatabaseReference mUserRef;
+    private DatabaseReference databaseReference;
+    private DatabaseReference messageRef;
+    private DatabaseReference userRef;
 
-    private RecyclerView mMessageRecyclerView;
-    private FirebaseRecyclerAdapter<Message, MessageHolder> mAdapter;
-    private LinearLayoutManager mLinearLayoutManager;
+    private RecyclerView messageRecyclerView;
+    private FirebaseRecyclerAdapter<Message, MessageHolder> adapter;
+    private LinearLayoutManager linearLayoutManager;
 
-    private EditText mMessageEditText;
-    private Button mSendButton;
+    private EditText messageEditText;
+    private Button sendButton;
 
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mDrawerAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
+    private ListView drawerList;
+    private ArrayAdapter<String> drawerAdapter;
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+    private String activityTitle;
 
     public static Intent newIntent(Context context, User currentUser, User otherUser) {
         Intent intent = new Intent(context, ConversationActivity.class);
@@ -77,8 +77,8 @@ public class ConversationActivity extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-        mUserRef = mDatabaseRef.child("users").child(firebaseUser.getUid());
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        userRef = databaseReference.child("users").child(firebaseUser.getUid());
         Log.d(TAG, ""+firebaseUser.getUid());
         currentUser = getIntent().getParcelableExtra(CURRENT_USER_EXTRA);
         otherUser = getIntent().getParcelableExtra(OTHER_USER_EXTRA);
@@ -90,19 +90,19 @@ public class ConversationActivity extends AppCompatActivity {
         messageId = currentUser.getUuid().compareTo(otherUser.getUuid()) < 0 ?
                 currentUser.getUuid() + "_" + otherUser.getUuid() :
                 otherUser.getUuid() + "_" + currentUser.getUuid();
-        mMessageRef = mDatabaseRef.child("messages").child(messageId);
+        messageRef = databaseReference.child("messages").child(messageId);
 
-        mMessageRecyclerView = (RecyclerView) findViewById(R.id.message_recycler_view);
-        mMessageRecyclerView.setHasFixedSize(true);
-        mLinearLayoutManager = new LinearLayoutManager(this);
-        mLinearLayoutManager.setStackFromEnd(true);
-        mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
+        messageRecyclerView = (RecyclerView) findViewById(R.id.message_recycler_view);
+        messageRecyclerView.setHasFixedSize(true);
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        messageRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mAdapter = new FirebaseRecyclerAdapter<Message, MessageHolder>(
+        adapter = new FirebaseRecyclerAdapter<Message, MessageHolder>(
                 Message.class,
                 R.layout.item_message,
                 MessageHolder.class,
-                mMessageRef
+                messageRef
         ) {
             @Override
             protected void populateViewHolder(MessageHolder viewHolder, Message model, int position) {
@@ -113,28 +113,28 @@ public class ConversationActivity extends AppCompatActivity {
             }
         };
 
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                int friendlyMessageCount = mAdapter.getItemCount();
+                int friendlyMessageCount = adapter.getItemCount();
                 int lastVisiblePosition =
-                        mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+                        linearLayoutManager.findLastCompletelyVisibleItemPosition();
                 // If the recycler view is initially being loaded or the
                 // user is at the bottom of the list, scroll to the bottom
                 // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
                         (positionStart >= (friendlyMessageCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
-                    mMessageRecyclerView.scrollToPosition(positionStart);
+                    messageRecyclerView.scrollToPosition(positionStart);
                 }
             }
         });
 
-        mMessageRecyclerView.setAdapter(mAdapter);
+        messageRecyclerView.setAdapter(adapter);
 
-        mMessageEditText = (EditText) findViewById(R.id.messageEditText);
-        mMessageEditText.addTextChangedListener(new TextWatcher() {
+        messageEditText = (EditText) findViewById(R.id.messageEditText);
+        messageEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -142,9 +142,9 @@ public class ConversationActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
+                    sendButton.setEnabled(true);
                 } else {
-                    mSendButton.setEnabled(false);
+                    sendButton.setEnabled(false);
                 }
             }
 
@@ -153,27 +153,27 @@ public class ConversationActivity extends AppCompatActivity {
             }
         });
 
-        mSendButton = (Button) findViewById(R.id.sendButton);
-        mSendButton.setOnClickListener(new View.OnClickListener() {
+        sendButton = (Button) findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Message message = new Message(
                         currentUser.getName(),
-                        mMessageEditText.getText().toString(),
+                        messageEditText.getText().toString(),
                         currentUser.getPokemon().getSprites().getFrontDefault()
                 );
-                mMessageRef.push().setValue(message);
-                mMessageEditText.setText("");
+                messageRef.push().setValue(message);
+                messageEditText.setText("");
             }
         });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_conversation);
-        mActivityTitle = getTitle().toString();
-        mDrawerList = (ListView) findViewById(R.id.navList_activity_conversation);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_conversation);
+        activityTitle = getTitle().toString();
+        drawerList = (ListView) findViewById(R.id.navList_activity_conversation);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
@@ -216,12 +216,12 @@ public class ConversationActivity extends AppCompatActivity {
 
     private void addDrawerItems() {
         String[] drawerOptions = {"Main Menu", "Matches", "Messages", "Sign out"};
-        mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
-        mDrawerList.setAdapter(mDrawerAdapter);
+        drawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
+        drawerList.setAdapter(drawerAdapter);
     }
 
     private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely open state. */
@@ -234,17 +234,17 @@ public class ConversationActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
+                getSupportActionBar().setTitle(activityTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.setDrawerListener(drawerToggle);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return false;
@@ -253,12 +253,12 @@ public class ConversationActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 }

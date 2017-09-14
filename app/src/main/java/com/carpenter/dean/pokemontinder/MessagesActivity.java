@@ -30,17 +30,17 @@ public class MessagesActivity extends AppCompatActivity {
     private static final String TAG = "MessagesActivity";
     private static final String USER = "user";
 
-    private RecyclerView mRecyclerView;
-    private FirebaseRecyclerAdapter<User, MessagesViewHolder> mAdapter;
-    private FirebaseUser mUser;
-    private DatabaseReference mDatabaseRef;
+    private RecyclerView recyclerView;
+    private FirebaseRecyclerAdapter<User, MessagesViewHolder> adapter;
+    private FirebaseUser user;
+    private DatabaseReference databaseReference;
     private DatabaseReference matchesRef;
 
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mDrawerAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
+    private ListView drawerList;
+    private ArrayAdapter<String> drawerAdapter;
+    private ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
+    private String activityTitle;
 
     private static User currentUser;
 
@@ -56,15 +56,15 @@ public class MessagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messages);
 
         currentUser = getIntent().getParcelableExtra(USER);
-        mUser = FirebaseAuth.getInstance().getCurrentUser();
-        mRecyclerView = (RecyclerView) findViewById(R.id.messages_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        recyclerView = (RecyclerView) findViewById(R.id.messages_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        if(mUser != null) {
-            mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-            matchesRef = mDatabaseRef.child("users").child(mUser.getUid()).child("matches");
-            mAdapter = new FirebaseRecyclerAdapter<User, MessagesViewHolder>(
+        if(user != null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference();
+            matchesRef = databaseReference.child("users").child(user.getUid()).child("matches");
+            adapter = new FirebaseRecyclerAdapter<User, MessagesViewHolder>(
                     User.class,
                     R.layout.messages_item,
                     MessagesViewHolder.class,
@@ -80,16 +80,16 @@ public class MessagesActivity extends AppCompatActivity {
                     Log.d(TAG, "User in Viewholder: "+model.getName());
                 }
             };
-            mRecyclerView.setAdapter(mAdapter);
+            recyclerView.setAdapter(adapter);
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_messages);
-        mActivityTitle = getTitle().toString();
-        mDrawerList = (ListView) findViewById(R.id.navList_messages_activity);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_activity_messages);
+        activityTitle = getTitle().toString();
+        drawerList = (ListView) findViewById(R.id.navList_messages_activity);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch(position) {
@@ -137,12 +137,12 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void addDrawerItems() {
         String[] drawerOptions = {"Main Menu", "Matches", "Sign out"};
-        mDrawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
-        mDrawerList.setAdapter(mDrawerAdapter);
+        drawerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, drawerOptions);
+        drawerList.setAdapter(drawerAdapter);
     }
 
     private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely open state. */
@@ -155,17 +155,17 @@ public class MessagesActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
+                getSupportActionBar().setTitle(activityTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.setDrawerListener(drawerToggle);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mDrawerToggle.onOptionsItemSelected(item)) {
+        if(drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return false;
@@ -174,12 +174,12 @@ public class MessagesActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+        drawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 }
